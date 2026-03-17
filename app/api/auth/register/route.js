@@ -40,9 +40,13 @@ export async function POST(request) {
 
     const diceBearAvatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
 
+    const username =
+      email.split("@")[0].toLowerCase() + Math.floor(Math.random() * 1000);
+
     const newUser = {
       name,
       email,
+      username, // Added to fix duplicate key error on username index
       passwordHash,
       avatar: avatar || diceBearAvatar,
       bio: bio || "",
