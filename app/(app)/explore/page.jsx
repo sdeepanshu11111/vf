@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Search } from "lucide-react";
 import PostCard from "@/components/feed/PostCard";
 import MemberCard from "@/components/members/MemberCard";
@@ -14,16 +14,12 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (query.trim()) {
-        handleSearch();
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [query]);
+  const handleSearch = useCallback(async () => {
+    if (!query.trim()) {
+      setResults({ posts: [], users: [] });
+      return;
+    }
 
-  const handleSearch = async () => {
     setLoading(true);
     try {
       const res = await fetch(
@@ -35,7 +31,16 @@ export default function ExplorePage() {
       console.error(e);
     }
     setLoading(false);
-  };
+  }, [activeTab, query]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (query.trim()) {
+        handleSearch();
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [handleSearch, query]);
 
   return (
     <div className="space-y-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
@@ -23,7 +23,7 @@ export default function ModerationPage() {
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchQueue = async () => {
+  const fetchQueue = useCallback(async () => {
     try {
       const res = await fetch("/api/moderation");
       if (!res.ok) throw new Error("Unauthorized");
@@ -35,11 +35,11 @@ export default function ModerationPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     fetchQueue();
-  }, []);
+  }, [fetchQueue]);
 
   const handleAction = async (postId, action) => {
     try {

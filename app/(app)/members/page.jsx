@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Podium from "@/components/members/Podium";
 import LeaderboardTable from "@/components/members/LeaderboardTable";
@@ -16,7 +16,7 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(
@@ -28,14 +28,14 @@ export default function MembersPage() {
       console.error(e);
     }
     setLoading(false);
-  };
+  }, [search]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchMembers();
     }, 300);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [fetchMembers]);
 
   const handleFollow = async (memberId) => {
     try {

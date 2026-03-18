@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PostComposer from "@/components/feed/PostComposer";
 import PostCard from "@/components/feed/PostCard";
 import PostTypeFilter from "@/components/feed/PostTypeFilter";
@@ -14,7 +14,7 @@ export default function FeedPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchPosts = async (reset = false) => {
+  const fetchPosts = useCallback(async (reset = false) => {
     const nextPage = reset ? 1 : page;
     setLoading(true);
     try {
@@ -38,11 +38,11 @@ export default function FeedPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterType, page]);
 
   useEffect(() => {
     fetchPosts(true);
-  }, [filterType]);
+  }, [filterType, fetchPosts]);
 
   return (
     <div className="space-y-6">
