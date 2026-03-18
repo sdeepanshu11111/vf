@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -49,7 +49,8 @@ export default function ChatWindow({ conversationId, otherUser }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
+    if (!conversationId) return;
     try {
       const res = await fetch(`/api/messages/${conversationId}`);
       const data = await res.json();
@@ -58,13 +59,14 @@ export default function ChatWindow({ conversationId, otherUser }) {
       console.error(e);
     }
     setLoading(false);
-  };
+  }, [conversationId]);
 
   useEffect(() => {
     if (conversationId) {
+      setLoading(true);
       fetchMessages();
     }
-  }, [conversationId]);
+  }, [conversationId, fetchMessages]);
 
   useEffect(() => {
     scrollToBottom();

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Send, Image } from "lucide-react";
+import { Send, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -155,7 +155,7 @@ export default function PostComposer({ onPostCreated }) {
                           : "text-gray-400 hover:text-gray-600",
                       )}
                     >
-                      <Image className="h-5 w-5" />
+                      <ImageIcon className="h-5 w-5" />
                     </button>
                     {error && (
                       <p className="text-[11px] text-red-500 font-medium">

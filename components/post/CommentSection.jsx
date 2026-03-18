@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowBigUp, Reply, CornerDownRight } from "lucide-react";
+import { ArrowBigUp, Reply } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
 import { Button } from "@/components/ui/button";
@@ -148,7 +148,7 @@ export default function CommentSection({ postId }) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const res = await fetch(`/api/posts/${postId}/comments`);
       const data = await res.json();
@@ -157,11 +157,12 @@ export default function CommentSection({ postId }) {
       console.error(e);
     }
     setLoading(false);
-  };
+  }, [postId]);
 
   useEffect(() => {
+    setLoading(true);
     fetchComments();
-  }, [postId]);
+  }, [fetchComments]);
 
   const handleSubmit = async () => {
     if (!newComment.trim() || submitting) return;

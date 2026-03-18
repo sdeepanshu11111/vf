@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
@@ -151,10 +152,12 @@ export default function PostCard({ post, onUpdate }) {
         {post.images?.length > 0 && (
           <div className="mt-3 grid gap-2 grid-cols-1">
             {post.images.map((img, i) => (
-              <img
+              <Image
                 key={i}
                 src={img}
-                alt=""
+                alt={`Post image ${i + 1}`}
+                width={1200}
+                height={800}
                 className="rounded-xl w-full max-h-80 object-cover bg-gray-100"
               />
             ))}
