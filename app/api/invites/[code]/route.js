@@ -3,6 +3,8 @@ import { ObjectId } from "mongodb";
 import { hash } from "bcryptjs";
 import { getDb } from "@/lib/mongodb";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/invites/[code] — validate invite
 export async function GET(request, { params }) {
   try {

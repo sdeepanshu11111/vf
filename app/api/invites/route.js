@@ -4,6 +4,8 @@ import { randomBytes } from "crypto";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 
+export const dynamic = "force-dynamic";
+
 // POST /api/invites — generate invite (admin only)
 export async function POST(request) {
   try {

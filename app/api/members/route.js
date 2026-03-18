@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import { serializeUser } from "@/lib/serializers";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/members
 export async function GET(request) {
   try {

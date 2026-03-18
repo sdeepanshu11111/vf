@@ -5,6 +5,8 @@ import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import { serializeConversation, serializeUser } from "@/lib/serializers";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/messages — list conversations
 export async function GET(request) {
   try {

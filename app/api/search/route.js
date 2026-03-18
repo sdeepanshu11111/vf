@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { serializePost, serializeUser } from "@/lib/serializers";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/search
 export async function GET(request) {
   try {

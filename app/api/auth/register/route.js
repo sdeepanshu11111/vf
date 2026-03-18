@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import { getDb } from "@/lib/mongodb";
 
+export const dynamic = "force-dynamic";
+
 function deriveTier(gmvRange) {
   switch (gmvRange) {
     case "₹50L+":

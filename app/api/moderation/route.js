@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import { serializePost } from "@/lib/serializers";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/moderation — flag queue
 export async function GET(request) {
   try {

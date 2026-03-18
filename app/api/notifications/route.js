@@ -5,6 +5,8 @@ import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import { serializeNotification } from "@/lib/serializers";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/notifications
 export async function GET(request) {
   try {
