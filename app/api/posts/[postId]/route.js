@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializePost } from "@/lib/serializers";
 
 // GET /api/posts/[postId]
 export async function GET(request, { params }) {
@@ -50,7 +51,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    return NextResponse.json(post[0]);
+    return NextResponse.json(serializePost(post[0]));
   } catch (error) {
     console.error("Get post error:", error);
     return NextResponse.json(

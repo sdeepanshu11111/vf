@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializePost } from "@/lib/serializers";
 
 // GET /api/posts — fetch feed
 export async function GET(request) {
@@ -19,7 +20,6 @@ export async function GET(request) {
       filter.type = type;
     }
 
-    console.log("Fetching posts with filter:", filter);
     const pipeline = [
       { $match: filter },
       { $sort: { createdAt: -1 } },
@@ -71,7 +71,11 @@ export async function GET(request) {
       db.collection("posts").countDocuments(filter),
     ]);
 
-    return NextResponse.json({ posts, total: totalResult, page });
+    return NextResponse.json({
+      posts: posts.map(serializePost),
+      total: totalResult,
+      page,
+    });
   } catch (error) {
     console.error("Get posts error:", error);
     return NextResponse.json(
@@ -91,9 +95,6 @@ export async function POST(request) {
 
     const body = await request.json();
     const { type, content, tags, images } = body;
-    console.log("POST /api/posts - session user:", session.user);
-    console.log("POST /api/posts - body:", body);
-
     if (!type || !["win", "tip", "question", "sourcing"].includes(type)) {
       return NextResponse.json(
         { error: "Valid post type required (win, tip, question, sourcing)" },

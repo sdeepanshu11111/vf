@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializeMessage } from "@/lib/serializers";
 
 // GET /api/messages/[conversationId] — get messages
 export async function GET(request, { params }) {
@@ -13,11 +14,17 @@ export async function GET(request, { params }) {
     }
 
     const db = await getDb();
+    const sessionId = session.user.id;
     const conv = await db.collection("conversations").findOne({
       _id: new ObjectId(params.conversationId),
     });
 
-    if (!conv || !conv.participants.includes(session.user.id)) {
+    const participantIds =
+      conv?.participantIds ||
+      conv?.participants?.map((participant) => participant?.toString()) ||
+      [];
+
+    if (!conv || !participantIds.includes(sessionId)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -38,13 +45,13 @@ export async function GET(request, { params }) {
     await db.collection("messages").updateMany(
       {
         conversationId: params.conversationId,
-        senderId: { $ne: session.user.id },
+        senderId: { $ne: sessionId },
         readAt: null,
       },
       { $set: { readAt: new Date() } },
     );
 
-    return NextResponse.json({ messages });
+    return NextResponse.json({ messages: messages.map(serializeMessage) });
   } catch (error) {
     console.error("Get messages error:", error);
     return NextResponse.json(
@@ -63,11 +70,17 @@ export async function POST(request, { params }) {
     }
 
     const db = await getDb();
+    const sessionId = session.user.id;
     const conv = await db.collection("conversations").findOne({
       _id: new ObjectId(params.conversationId),
     });
 
-    if (!conv || !conv.participants.includes(session.user.id)) {
+    const participantIds =
+      conv?.participantIds ||
+      conv?.participants?.map((participant) => participant?.toString()) ||
+      [];
+
+    if (!conv || !participantIds.includes(sessionId)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -83,7 +96,7 @@ export async function POST(request, { params }) {
 
     const message = {
       conversationId: params.conversationId,
-      senderId: session.user.id,
+      senderId: sessionId,
       content: content.trim(),
       readAt: null,
       createdAt: new Date(),
@@ -109,7 +122,7 @@ export async function POST(request, { params }) {
           {
             message: { ...message, _id: result.insertedId },
             sender: {
-              id: session.user.id,
+              id: sessionId,
               name: session.user.name,
               avatar: session.user.avatar,
             },

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializePost, serializeUser } from "@/lib/serializers";
 
 // GET /api/users/[userId]
 export async function GET(request, { params }) {
@@ -35,10 +36,8 @@ export async function GET(request, { params }) {
       .toArray();
 
     return NextResponse.json({
-      ...user,
-      followerCount: user.followers?.length || 0,
-      followingCount: user.following?.length || 0,
-      posts,
+      user: serializeUser(user),
+      posts: posts.map(serializePost),
     });
   } catch (error) {
     console.error("Get user error:", error);

@@ -75,10 +75,13 @@ export async function POST(request, { params }) {
 
     const passwordHash = await hash(password, 12);
     const diceBearAvatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
+    const username =
+      invite.email.split("@")[0].toLowerCase() + Math.floor(Math.random() * 1000);
 
     await db.collection("users").insertOne({
       name,
       email: invite.email,
+      username,
       passwordHash,
       avatar: diceBearAvatar,
       bio: "",

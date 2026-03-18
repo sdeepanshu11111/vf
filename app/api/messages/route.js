@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializeConversation, serializeUser } from "@/lib/serializers";
 
 // GET /api/messages — list conversations
 export async function GET(request) {
@@ -14,17 +15,29 @@ export async function GET(request) {
 
     const db = await getDb();
     const userId = session.user.id;
+    const userIdentifiers = ObjectId.isValid(userId)
+      ? [userId, new ObjectId(userId)]
+      : [userId];
 
     const conversations = await db
       .collection("conversations")
-      .find({ participants: userId })
+      .find({
+        $or: [
+          { participants: { $in: userIdentifiers } },
+          { participantIds: userId },
+        ],
+      })
       .sort({ lastAt: -1 })
       .toArray();
 
     // Enrich with other participant info and unread count
     const enriched = await Promise.all(
       conversations.map(async (conv) => {
-        const otherId = conv.participants.find((p) => p !== userId);
+        const participantIds =
+          conv.participantIds ||
+          conv.participants?.map((participant) => participant?.toString()) ||
+          [];
+        const otherId = participantIds.find((participant) => participant !== userId);
         const otherUser = otherId
           ? await db
               .collection("users")
@@ -41,8 +54,8 @@ export async function GET(request) {
         });
 
         return {
-          ...conv,
-          otherUser,
+          ...serializeConversation(conv),
+          otherUser: serializeUser(otherUser),
           unreadCount,
         };
       }),
@@ -82,8 +95,17 @@ export async function POST(request) {
     // Idempotent: check both orderings
     const existing = await db.collection("conversations").findOne({
       $or: [
-        { participants: [userId, participantId] },
-        { participants: [participantId, userId] },
+        { participantIds: { $all: [userId, participantId] } },
+        { participants: { $all: [userId, participantId] } },
+        ...(ObjectId.isValid(userId) && ObjectId.isValid(participantId)
+          ? [
+              {
+                participants: {
+                  $all: [new ObjectId(userId), new ObjectId(participantId)],
+                },
+              },
+            ]
+          : []),
       ],
     });
 
@@ -93,6 +115,7 @@ export async function POST(request) {
 
     const result = await db.collection("conversations").insertOne({
       participants: [userId, participantId],
+      participantIds: [userId, participantId],
       lastMessage: "",
       lastAt: new Date(),
     });

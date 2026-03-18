@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowBigUp, Reply, CornerDownRight } from "lucide-react";
@@ -159,9 +159,9 @@ export default function CommentSection({ postId }) {
     setLoading(false);
   };
 
-  useState(() => {
+  useEffect(() => {
     fetchComments();
-  });
+  }, [postId]);
 
   const handleSubmit = async () => {
     if (!newComment.trim() || submitting) return;

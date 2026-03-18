@@ -29,14 +29,28 @@ export default function EditProfilePage() {
   });
 
   useEffect(() => {
-    if (session?.user) {
-      setForm({
-        name: session.user.name || "",
-        bio: session.user.bio || "",
-        city: session.user.city || "",
-        niche: session.user.niche || "",
-      });
-    }
+    if (!session?.user?.id) return;
+
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(`/api/users/${session.user.id}`);
+        const data = await res.json();
+        const user = data.user;
+
+        if (user) {
+          setForm({
+            name: user.name || "",
+            bio: user.bio || "",
+            city: user.city || "",
+            niche: user.niche || "",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProfile();
   }, [session]);
 
   const handleSubmit = async (e) => {
@@ -49,7 +63,13 @@ export default function EditProfilePage() {
         body: JSON.stringify(form),
       });
       if (res.ok) {
-        await update(); // Update NextAuth session
+        await update({
+          name: form.name,
+          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(form.name)}`,
+          bio: form.bio,
+          city: form.city,
+          niche: form.niche,
+        });
         router.push(`/profile/${session.user.id}`);
       }
     } catch (e) {

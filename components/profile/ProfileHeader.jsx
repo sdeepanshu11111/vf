@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -23,7 +23,15 @@ export default function ProfileHeader({ user, isOwnProfile }) {
   const [isFollowing, setIsFollowing] = useState(
     user?.followers?.includes(session?.user?.id),
   );
+  const [followerCount, setFollowerCount] = useState(
+    user?.followerCount || user?.followers?.length || 0,
+  );
   const [followLoading, setFollowLoading] = useState(false);
+
+  useEffect(() => {
+    setIsFollowing(user?.followers?.includes(session?.user?.id));
+    setFollowerCount(user?.followerCount || user?.followers?.length || 0);
+  }, [session?.user?.id, user]);
 
   const handleFollow = async () => {
     if (followLoading) return;
@@ -35,6 +43,9 @@ export default function ProfileHeader({ user, isOwnProfile }) {
       if (res.ok) {
         const data = await res.json();
         setIsFollowing(data.following);
+        setFollowerCount((prev) =>
+          data.following ? prev + 1 : Math.max(prev - 1, 0),
+        );
       }
     } catch (e) {
       console.error(e);
@@ -177,7 +188,7 @@ export default function ProfileHeader({ user, isOwnProfile }) {
           </div>
           <div className="text-center">
             <p className="text-lg font-bold text-gray-900">
-              {user?.followerCount || user?.followers?.length || 0}
+              {followerCount}
             </p>
             <p className="text-xs text-gray-500">Followers</p>
           </div>

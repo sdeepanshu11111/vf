@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import { serializePost, serializeUser } from "@/lib/serializers";
 
 // GET /api/search
 export async function GET(request) {
@@ -75,7 +76,10 @@ export async function GET(request) {
         .toArray();
     }
 
-    return NextResponse.json({ posts, users });
+    return NextResponse.json({
+      posts: posts.map(serializePost),
+      users: users.map(serializeUser),
+    });
   } catch (error) {
     console.error("Search error:", error);
     return NextResponse.json(

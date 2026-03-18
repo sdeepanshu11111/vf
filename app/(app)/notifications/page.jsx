@@ -27,7 +27,11 @@ export default function NotificationsPage() {
 
   const markAllRead = async () => {
     try {
-      await fetch("/api/notifications", { method: "PATCH" });
+      await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (e) {
       console.error(e);

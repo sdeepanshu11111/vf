@@ -55,7 +55,7 @@ export default function ProfilePage() {
         <h3 className="font-bold text-gray-900 px-1">Posts</h3>
         {posts.length > 0 ? (
           posts.map((post) => (
-            <PostCard key={post._id} post={{ ...post, author: user }} />
+            <PostCard key={post._id} post={{ ...post, author: post.author || user }} />
           ))
         ) : (
           <div className="text-center py-12 bg-white rounded-2xl shadow-sm">

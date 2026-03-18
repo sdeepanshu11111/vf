@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializeUser } from "@/lib/serializers";
 
 // GET /api/members
 export async function GET(request) {
@@ -10,7 +11,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const sort = searchParams.get("sort") || "points";
     const filter = searchParams.get("filter") || "all";
-    const search = searchParams.get("search") || "";
+    const search =
+      searchParams.get("search") || searchParams.get("q") || "";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const skip = (page - 1) * limit;
@@ -64,7 +66,11 @@ export async function GET(request) {
       db.collection("users").countDocuments(query),
     ]);
 
-    return NextResponse.json({ members, total, page });
+    return NextResponse.json({
+      members: members.map(serializeUser),
+      total,
+      page,
+    });
   } catch (error) {
     console.error("Get members error:", error);
     return NextResponse.json(

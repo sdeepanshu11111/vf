@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializeNotification } from "@/lib/serializers";
 
 // GET /api/notifications
 export async function GET(request) {
@@ -65,7 +66,10 @@ export async function GET(request) {
       read: false,
     });
 
-    return NextResponse.json({ notifications, unreadCount });
+    return NextResponse.json({
+      notifications: notifications.map(serializeNotification),
+      unreadCount,
+    });
   } catch (error) {
     console.error("Get notifications error:", error);
     return NextResponse.json(
@@ -83,10 +87,12 @@ export async function PATCH(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request
+      .json()
+      .catch(() => ({ all: true }));
     const db = await getDb();
 
-    if (body.all) {
+    if (body.all || (!body.ids?.length && Object.keys(body).length === 0)) {
       await db
         .collection("notifications")
         .updateMany(

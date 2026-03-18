@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializePost } from "@/lib/serializers";
 
 // GET /api/moderation — flag queue
 export async function GET(request) {
@@ -50,17 +51,21 @@ export async function GET(request) {
 
     // Get stats
     const stats = {
-      flagged: await db
+      pendingFlags: await db
         .collection("posts")
         .countDocuments({ flagCount: { $gte: 1 } }),
-      hidden: await db.collection("posts").countDocuments({ status: "hidden" }),
-      banned: await db.collection("users").countDocuments({ isBanned: true }),
-      actionsToday: await db.collection("moderation").countDocuments({
-        createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
-      }),
+      removedPosts: await db
+        .collection("posts")
+        .countDocuments({ status: { $in: ["hidden", "removed"] } }),
+      bannedUsers: await db
+        .collection("users")
+        .countDocuments({ isBanned: true }),
     };
 
-    return NextResponse.json({ posts, stats });
+    return NextResponse.json({
+      flaggedPosts: posts.map(serializePost),
+      stats,
+    });
   } catch (error) {
     console.error("Get moderation error:", error);
     return NextResponse.json(

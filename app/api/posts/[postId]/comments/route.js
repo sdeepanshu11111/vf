@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { serializeIds } from "@/lib/serializers";
 
 // GET /api/posts/[postId]/comments
 export async function GET(request, { params }) {
@@ -60,7 +61,7 @@ export async function GET(request, { params }) {
       replies: replies.filter((r) => r.parentId === comment._id.toString()),
     }));
 
-    return NextResponse.json({ comments: structured });
+    return NextResponse.json({ comments: structured.map(serializeIds) });
   } catch (error) {
     console.error("Get comments error:", error);
     return NextResponse.json(

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,9 +21,12 @@ const gmvRanges = ["Just starting", "₹1L–10L", "₹10L–50L", "₹50L+"];
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteCode = searchParams.get("invite");
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inviteStatus, setInviteStatus] = useState("idle");
 
   const [form, setForm] = useState({
     name: "",
@@ -36,6 +39,41 @@ export default function SignupPage() {
     gmvRange: "Just starting",
   });
 
+  useEffect(() => {
+    if (!inviteCode) return;
+
+    const validateInvite = async () => {
+      setInviteStatus("loading");
+      try {
+        const res = await fetch(`/api/invites/${inviteCode}`);
+        const data = await res.json();
+
+        if (!res.ok || !data.valid) {
+          setInviteStatus("invalid");
+          setError(data.error || "This invite is no longer valid.");
+          return;
+        }
+
+        setForm((prev) => ({
+          ...prev,
+          email: data.email || prev.email,
+          gmvRange:
+            data.tier === "scale"
+              ? "₹50L+"
+              : data.tier === "growth"
+                ? "₹10L–50L"
+                : prev.gmvRange,
+        }));
+        setInviteStatus("valid");
+      } catch (err) {
+        setInviteStatus("invalid");
+        setError("Could not validate invite code.");
+      }
+    };
+
+    validateInvite();
+  }, [inviteCode]);
+
   const update = (field, value) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -44,10 +82,15 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const endpoint = inviteCode ? `/api/invites/${inviteCode}` : "/api/auth/register";
+      const payload = inviteCode
+        ? { name: form.name, password: form.password }
+        : form;
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -139,6 +182,12 @@ export default function SignupPage() {
             </div>
           )}
 
+          {inviteCode && inviteStatus === "valid" && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl">
+              Invite verified for {form.email}
+            </div>
+          )}
+
           {/* Step 1: Account */}
           {step === 1 && (
             <div className="space-y-4">
@@ -166,6 +215,7 @@ export default function SignupPage() {
                   value={form.email}
                   onChange={(e) => update("email", e.target.value)}
                   className="rounded-xl h-11"
+                  disabled={Boolean(inviteCode)}
                 />
               </div>
               <div>
@@ -297,6 +347,7 @@ export default function SignupPage() {
             {step < 3 ? (
               <Button
                 onClick={() => validateStep() && setStep(step + 1)}
+                disabled={inviteStatus === "loading" || inviteStatus === "invalid"}
                 className="bg-[#FF6B35] hover:bg-[#e55a2b] text-white rounded-xl px-6"
               >
                 Continue
@@ -305,7 +356,11 @@ export default function SignupPage() {
             ) : (
               <Button
                 onClick={handleSubmit}
-                disabled={loading}
+                disabled={
+                  loading ||
+                  inviteStatus === "loading" ||
+                  inviteStatus === "invalid"
+                }
                 className="bg-[#FF6B35] hover:bg-[#e55a2b] text-white rounded-xl px-6"
               >
                 {loading ? "Creating..." : "🚀 Join Community"}

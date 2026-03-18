@@ -2,26 +2,58 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { TrendingUp } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
-import TierBadge from "@/components/ui/TierBadge";
 import PointsBadge from "@/components/ui/PointsBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function RightPanel() {
+  const { data: session } = useSession();
   const [topUsers, setTopUsers] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
 
   useEffect(() => {
-    fetch("/api/members?sort=points&limit=5")
+    fetch("/api/members?sort=points&limit=8")
       .then((r) => r.json())
       .then((data) => {
         setTopUsers((data.members || []).slice(0, 3));
-        setSuggestedUsers((data.members || []).slice(3, 6));
+        setSuggestedUsers(
+          (data.members || [])
+            .filter((member) => member._id !== session?.user?.id)
+            .slice(3, 6),
+        );
       })
       .catch(() => {});
-  }, []);
+  }, [session?.user?.id]);
+
+  const handleFollow = async (userId) => {
+    try {
+      const res = await fetch(`/api/users/${userId}/follow`, {
+        method: "POST",
+      });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      setSuggestedUsers((prev) =>
+        prev.map((user) => {
+          if (user._id !== userId) return user;
+
+          const followers = new Set(user.followers || []);
+          if (data.following) {
+            followers.add(session?.user?.id);
+          } else {
+            followers.delete(session?.user?.id);
+          }
+
+          return { ...user, followers: Array.from(followers) };
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const trendingTopics = [
     { tag: "COD Strategy", count: 42 },
@@ -81,8 +113,11 @@ export default function RightPanel() {
                   variant="outline"
                   size="sm"
                   className="h-7 text-xs rounded-full"
+                  onClick={() => handleFollow(user._id)}
                 >
-                  Follow
+                  {user.followers?.includes(session?.user?.id)
+                    ? "Following"
+                    : "Follow"}
                 </Button>
               </div>
             ))}

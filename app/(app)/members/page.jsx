@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Podium from "@/components/members/Podium";
 import LeaderboardTable from "@/components/members/LeaderboardTable";
 import MemberCard from "@/components/members/MemberCard";
@@ -10,6 +11,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export default function MembersPage() {
+  const { data: session } = useSession();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -17,7 +19,9 @@ export default function MembersPage() {
   const fetchMembers = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/members?q=${encodeURIComponent(search)}`);
+      const res = await fetch(
+        `/api/members?q=${encodeURIComponent(search)}&sort=points&limit=50`,
+      );
       const data = await res.json();
       setMembers(data.members || []);
     } catch (e) {
@@ -29,9 +33,36 @@ export default function MembersPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchMembers();
-    }, 500);
+    }, 300);
     return () => clearTimeout(timer);
   }, [search]);
+
+  const handleFollow = async (memberId) => {
+    try {
+      const res = await fetch(`/api/users/${memberId}/follow`, {
+        method: "POST",
+      });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      setMembers((prev) =>
+        prev.map((member) => {
+          if (member._id !== memberId) return member;
+
+          const followers = new Set(member.followers || []);
+          if (data.following) {
+            followers.add(session?.user?.id);
+          } else {
+            followers.delete(session?.user?.id);
+          }
+
+          return { ...member, followers: Array.from(followers) };
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const top3 = members.slice(0, 3);
 
@@ -76,7 +107,16 @@ export default function MembersPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {members.map((member) => (
-                <MemberCard key={member._id} member={member} />
+                <MemberCard
+                  key={member._id}
+                  member={member}
+                  onFollow={session?.user?.id !== member._id ? handleFollow : undefined}
+                  followLabel={
+                    member.followers?.includes(session?.user?.id)
+                      ? "Following"
+                      : "Follow"
+                  }
+                />
               ))}
             </div>
           )}

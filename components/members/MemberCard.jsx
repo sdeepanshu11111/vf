@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 
-export default function MemberCard({ member, onFollow }) {
+export default function MemberCard({ member, onFollow, followLabel = "Follow" }) {
   return (
     <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -30,14 +30,16 @@ export default function MemberCard({ member, onFollow }) {
           )}
           <p className="text-xs text-gray-500 mt-1">{member.niche}</p>
           <PointsBadge points={member.points} size="sm" />
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-3 rounded-full w-full text-xs"
-            onClick={() => onFollow?.(member._id)}
-          >
-            Follow
-          </Button>
+          {onFollow && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-3 rounded-full w-full text-xs"
+              onClick={() => onFollow(member._id)}
+            >
+              {followLabel}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
