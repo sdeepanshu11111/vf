@@ -143,7 +143,7 @@ function SignupContent() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#FF8F65] flex items-center justify-center font-bold text-white">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center font-bold text-white">
             vF
           </div>
           <span className="text-xl font-bold text-gray-900">vF Community</span>
@@ -156,9 +156,9 @@ function SignupContent() {
               <div
                 className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
                   s < step
-                    ? "bg-[#FF6B35] text-white"
+                    ? "bg-primary text-white"
                     : s === step
-                      ? "bg-[#FF6B35] text-white ring-4 ring-[#FF6B35]/20"
+                      ? "bg-primary text-white ring-4 ring-primary/20"
                       : "bg-gray-200 text-gray-400"
                 }`}
               >
@@ -167,7 +167,7 @@ function SignupContent() {
               {s < 3 && (
                 <div
                   className={`w-12 h-0.5 ${
-                    s < step ? "bg-[#FF6B35]" : "bg-gray-200"
+                    s < step ? "bg-primary" : "bg-gray-200"
                   }`}
                 />
               )}
@@ -262,7 +262,7 @@ function SignupContent() {
                   placeholder="D2C founder passionate about..."
                   value={form.bio}
                   onChange={(e) => update("bio", e.target.value)}
-                  className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20 resize-none"
+                  className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                   rows={3}
                 />
               </div>
@@ -297,7 +297,7 @@ function SignupContent() {
                       onClick={() => update("niche", n)}
                       className={`px-3 py-2.5 rounded-xl text-sm font-medium border transition-all ${
                         form.niche === n
-                          ? "border-[#FF6B35] bg-orange-50 text-[#FF6B35]"
+                          ? "border-primary bg-orange-50 text-primary"
                           : "border-gray-200 text-gray-600 hover:border-gray-300"
                       }`}
                     >
@@ -317,7 +317,7 @@ function SignupContent() {
                       onClick={() => update("gmvRange", g)}
                       className={`px-3 py-2.5 rounded-xl text-sm font-medium border transition-all ${
                         form.gmvRange === g
-                          ? "border-[#FF6B35] bg-orange-50 text-[#FF6B35]"
+                          ? "border-primary bg-orange-50 text-primary"
                           : "border-gray-200 text-gray-600 hover:border-gray-300"
                       }`}
                     >
@@ -348,7 +348,7 @@ function SignupContent() {
               <Button
                 onClick={() => validateStep() && setStep(step + 1)}
                 disabled={inviteStatus === "loading" || inviteStatus === "invalid"}
-                className="bg-[#FF6B35] hover:bg-[#e55a2b] text-white rounded-xl px-6"
+                className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
               >
                 Continue
                 <ChevronRight className="h-4 w-4 ml-1" />
@@ -361,7 +361,7 @@ function SignupContent() {
                   inviteStatus === "loading" ||
                   inviteStatus === "invalid"
                 }
-                className="bg-[#FF6B35] hover:bg-[#e55a2b] text-white rounded-xl px-6"
+                className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
               >
                 {loading ? "Creating..." : "🚀 Join Community"}
               </Button>
@@ -373,7 +373,7 @@ function SignupContent() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-[#FF6B35] font-semibold hover:underline"
+            className="text-primary font-semibold hover:underline"
           >
             Sign in
           </Link>

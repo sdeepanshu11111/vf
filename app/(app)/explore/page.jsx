@@ -50,7 +50,7 @@ export default function ExplorePage() {
           placeholder="Search founders, niches, or content..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="pl-10 h-12 rounded-xl border-0 shadow-sm ring-1 ring-gray-200 focus-visible:ring-[#FF6B35]/20"
+          className="pl-10 h-12 rounded-xl border-0 shadow-sm ring-1 ring-gray-200 focus-visible:ring-primary/20"
         />
       </div>
 

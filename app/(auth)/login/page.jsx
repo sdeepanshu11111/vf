@@ -47,7 +47,7 @@ function LoginContent() {
       <div className="hidden lg:flex flex-1 bg-[#111111] flex-col justify-between p-12">
         <div>
           <div className="flex items-center gap-3 mb-16">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#FF6B35] to-[#FF8F65] flex items-center justify-center font-bold text-lg text-white">
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center font-bold text-lg text-white">
               vF
             </div>
             <div>
@@ -61,7 +61,7 @@ function LoginContent() {
           <div className="max-w-md">
             <h2 className="text-4xl font-bold text-white leading-tight">
               Built for{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B35] to-[#FFB088]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
                 Hustlers
               </span>
             </h2>
@@ -80,7 +80,7 @@ function LoginContent() {
               community. The sourcing connections alone are worth it!&quot;
             </p>
             <div className="flex items-center gap-3 mt-4">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#FF6B35] to-[#FF8F65] flex items-center justify-center text-white text-sm font-bold">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white text-sm font-bold">
                 AM
               </div>
               <div>
@@ -99,7 +99,7 @@ function LoginContent() {
         <div className="w-full max-w-sm">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#FF8F65] flex items-center justify-center font-bold text-white">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center font-bold text-white">
               vF
             </div>
             <span className="text-xl font-bold">vF Community</span>
@@ -159,7 +159,7 @@ function LoginContent() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-11 rounded-xl bg-[#FF6B35] hover:bg-[#e55a2b] text-white font-semibold text-sm"
+              className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold text-sm"
             >
               {loading ? "Signing in..." : "Sign In"}
             </Button>
@@ -169,7 +169,7 @@ function LoginContent() {
             New here?{" "}
             <Link
               href="/signup"
-              className="text-[#FF6B35] font-semibold hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
               Create account
             </Link>

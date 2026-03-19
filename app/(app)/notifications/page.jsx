@@ -56,7 +56,7 @@ export default function NotificationsPage() {
             variant="ghost"
             size="sm"
             onClick={markAllRead}
-            className="text-[#FF6B35] hover:text-[#e55a2b] hover:bg-orange-50 font-medium"
+            className="text-primary hover:text-primary/90 hover:bg-orange-50 font-medium"
           >
             <CheckCheck className="h-4 w-4 mr-1.5" />
             Mark all read

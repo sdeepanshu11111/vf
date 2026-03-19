@@ -47,7 +47,7 @@ export default function ConversationList({ conversations = [], activeId }) {
               </p>
             </div>
             {conv.unreadCount > 0 && (
-              <span className="h-5 min-w-[20px] px-1.5 bg-[#FF6B35] text-white text-xs font-medium rounded-full flex items-center justify-center shrink-0">
+              <span className="h-5 min-w-[20px] px-1.5 bg-primary text-white text-xs font-medium rounded-full flex items-center justify-center shrink-0">
                 {conv.unreadCount}
               </span>
             )}

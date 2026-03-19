@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { motion } from "framer-motion";
 import {
   Home,
   Compass,
@@ -14,6 +15,7 @@ import {
   Shield,
   LogOut,
   ChevronUp,
+  Bookmark,
 } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
@@ -29,9 +31,10 @@ import {
 const navItems = [
   { href: "/feed", icon: Home, label: "Home" },
   { href: "/explore", icon: Compass, label: "Explore" },
+  { href: "/saved", icon: Bookmark, label: "Saved" },
   { href: "/notifications", icon: Bell, label: "Notifications" },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
-  { href: "/members", icon: Trophy, label: "Members" },
+  { href: "/members", icon: Trophy, label: "Leaderboard" },
 ];
 
 export default function Sidebar() {
@@ -42,26 +45,26 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 w-[240px] bg-[#111111] text-white z-40">
+      <aside className="hidden lg:flex flex-col fixed left-4 top-4 bottom-4 w-[260px] glass-card rounded-[2rem] z-40 overflow-hidden">
         {/* Logo */}
-        <div className="p-6 pb-4">
-          <Link href="/feed" className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#FF8F65] flex items-center justify-center font-bold text-sm">
-              vF
+        <div className="p-8 pb-6">
+          <Link href="/feed" className="flex items-center gap-3 group">
+            <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 group-hover:rotate-6 transition-transform">
+              <span className="font-black text-white text-lg">vF</span>
             </div>
             <div>
-              <span className="font-bold text-base tracking-tight">
+              <span className="font-bold text-lg tracking-tight text-gray-900 block leading-none">
                 vF Community
               </span>
-              <p className="text-[10px] text-gray-400 -mt-0.5">
-                Built for Hustlers
-              </p>
+              <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1 block">
+                The Inner Circle
+              </span>
             </div>
           </Link>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 space-y-1">
+        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto pt-2">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -69,30 +72,45 @@ export default function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                  "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-bold transition-all group",
                   isActive
-                    ? "bg-white/10 text-[#FF6B35]"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white",
+                    ? "text-primary"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
                 )}
               >
-                <item.icon className="h-5 w-5" />
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute inset-0 bg-primary/10 rounded-2xl -z-10"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <item.icon className={cn("h-5 w-5", isActive ? "stroke-[2.5px]" : "stroke-2")} />
                 {item.label}
               </Link>
             );
           })}
 
+          <div className="h-px bg-gray-100 mx-4 my-6" />
+
           {user && (
             <Link
               href={`/profile/${user.id}`}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
-                pathname.includes("/profile")
-                  ? "bg-white/10 text-[#FF6B35]"
-                  : "text-gray-400 hover:bg-white/5 hover:text-white",
+                "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-bold transition-all group",
+                pathname.includes("/profile") && !pathname.includes("/edit")
+                  ? "text-primary"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
               )}
             >
+              {pathname.includes("/profile") && !pathname.includes("/edit") && (
+                <motion.div
+                  layoutId="activeNav"
+                  className="absolute inset-0 bg-primary/10 rounded-2xl -z-10"
+                />
+              )}
               <User className="h-5 w-5" />
-              My Profile
+              My Space
             </Link>
           )}
 
@@ -100,77 +118,82 @@ export default function Sidebar() {
             <Link
               href="/moderation"
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-bold transition-all group",
                 pathname === "/moderation"
-                  ? "bg-white/10 text-[#FF6B35]"
-                  : "text-gray-400 hover:bg-white/5 hover:text-white",
+                  ? "text-primary"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
               )}
             >
+              {pathname === "/moderation" && (
+                <motion.div
+                  layoutId="activeNav"
+                  className="absolute inset-0 bg-primary/10 rounded-2xl -z-10"
+                />
+              )}
               <Shield className="h-5 w-5" />
-              Moderation
+              Admin Hub
             </Link>
           )}
         </nav>
 
-        {/* User info bottom */}
+        {/* User Profile Footer */}
         {user && (
-          <div className="p-4 border-t border-white/10 mt-auto">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-white/5 transition-colors text-left outline-none group">
-                  <UserAvatar src={user.avatar} name={user.name} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate group-hover:text-[#FF6B35] transition-colors">
-                      {user.name}
-                    </p>
-                    <TierBadge tier={user.tier} size="sm" />
-                  </div>
-                  <ChevronUp className="h-4 w-4 text-gray-500 group-hover:text-white transition-colors" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                align="start"
-                className="w-[200px] bg-[#1a1a1a] border-white/10 text-white"
-              >
-                <DropdownMenuItem asChild>
-                  <Link
-                    href="/profile/edit"
-                    className="flex items-center gap-2 cursor-pointer focus:bg-white/10 focus:text-[#FF6B35]"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Edit Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/10" />
-                <DropdownMenuItem
-                  className="flex items-center gap-2 text-red-400 cursor-pointer focus:bg-red-500/10 focus:text-red-400"
-                  onClick={() => signOut({ callbackUrl: "/login" })}
+          <div className="p-4 mt-auto">
+            <div className="bg-white/40 p-3 rounded-[1.5rem] border border-white/40">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 w-full p-1.5 rounded-xl hover:bg-white transition-all outline-none group">
+                    <UserAvatar src={user.avatar} name={user.name} size="sm" className="ring-2 ring-white" />
+                    <div className="flex-1 min-w-0 text-left">
+                      <p className="text-sm font-bold truncate text-gray-900">
+                        {user.name}
+                      </p>
+                      <TierBadge tier={user.tier} size="xs" />
+                    </div>
+                    <ChevronUp className="h-4 w-4 text-gray-400 group-hover:text-gray-900 transition-colors" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="center"
+                  className="w-[220px] glass-card rounded-2xl mb-2"
                 >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-primary/10 focus:text-primary py-2.5 font-bold">
+                    <Link href="/profile/edit" className="flex items-center gap-2">
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-gray-100" />
+                  <DropdownMenuItem
+                    className="rounded-xl text-red-500 focus:bg-red-50 focus:text-red-600 py-2.5 font-bold cursor-pointer"
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         )}
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 px-2 py-1 flex justify-around">
-        {navItems.map((item) => {
+      <nav className="lg:hidden fixed bottom-4 left-4 right-4 h-16 glass-card rounded-[1.25rem] z-50 flex items-center justify-around px-2 shadow-2xl">
+        {navItems.slice(0, 4).map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-medium transition-colors",
-                isActive ? "text-[#FF6B35]" : "text-gray-400",
+                "flex flex-col items-center justify-center gap-1 min-w-[60px] h-full rounded-xl transition-all",
+                isActive ? "text-primary" : "text-gray-400"
               )}
             >
-              <item.icon className="h-5 w-5" />
-              {item.label}
+              <item.icon className={cn("h-6 w-6", isActive ? "stroke-[2.5px]" : "stroke-2")} />
+              <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
             </Link>
           );
         })}
@@ -178,14 +201,12 @@ export default function Sidebar() {
           <Link
             href={`/profile/${user.id}`}
             className={cn(
-              "flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-medium transition-colors",
-              pathname.includes("/profile")
-                ? "text-[#FF6B35]"
-                : "text-gray-400",
+              "flex flex-col items-center justify-center gap-1 min-w-[60px] h-full rounded-xl transition-all",
+              pathname.includes("/profile") ? "text-primary" : "text-gray-400"
             )}
           >
-            <User className="h-5 w-5" />
-            Profile
+            <UserAvatar src={user.avatar} name={user.name} size="xs" className={cn("ring-1 ring-offset-2", pathname.includes("/profile") ? "ring-primary" : "ring-transparent")} />
+            <span className="text-[9px] font-black uppercase tracking-widest">Me</span>
           </Link>
         )}
       </nav>

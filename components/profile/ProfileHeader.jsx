@@ -11,21 +11,20 @@ import {
   UserMinus,
   Edit3,
   LogOut,
+  Zap,
 } from "lucide-react";
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
 import PointsBadge from "@/components/ui/PointsBadge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function ProfileHeader({ user, isOwnProfile }) {
   const { data: session } = useSession();
-  const [isFollowing, setIsFollowing] = useState(
-    user?.followers?.includes(session?.user?.id),
-  );
-  const [followerCount, setFollowerCount] = useState(
-    user?.followerCount || user?.followers?.length || 0,
-  );
+  const [isFollowing, setIsFollowing] = useState(user?.followers?.includes(session?.user?.id));
+  const [followerCount, setFollowerCount] = useState(user?.followerCount || user?.followers?.length || 0);
   const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
@@ -37,19 +36,13 @@ export default function ProfileHeader({ user, isOwnProfile }) {
     if (followLoading) return;
     setFollowLoading(true);
     try {
-      const res = await fetch(`/api/users/${user._id}/follow`, {
-        method: "POST",
-      });
+      const res = await fetch(`/api/users/${user._id}/follow`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         setIsFollowing(data.following);
-        setFollowerCount((prev) =>
-          data.following ? prev + 1 : Math.max(prev - 1, 0),
-        );
+        setFollowerCount((prev) => data.following ? prev + 1 : Math.max(prev - 1, 0));
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
     setFollowLoading(false);
   };
 
@@ -64,157 +57,129 @@ export default function ProfileHeader({ user, isOwnProfile }) {
         const data = await res.json();
         window.location.href = `/messages/${data.conversationId}`;
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-      {/* Cover */}
-      <div className="h-32 sm:h-40 bg-gradient-to-r from-[#FF6B35] via-[#FF8F65] to-[#FFB088]" />
+    <div className="bento-card overflow-hidden mb-8">
+      {/* Cover Area */}
+      <div className="relative h-48 sm:h-64 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-primary/40" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
+        
+        {/* Floating Profile Info (Desktop Only Overlay) */}
+        <div className="absolute bottom-6 right-6 hidden sm:flex gap-3">
+           {isOwnProfile ? (
+              <>
+                <Link href="/profile/edit">
+                  <Button className="glass-card bg-white/20 border-white/40 text-white font-bold rounded-2xl hover:bg-white/30 px-6 backdrop-blur-xl transition-all">
+                    <Edit3 className="h-4 w-4 mr-2" /> EDIT PROFILE
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                  className="glass-card bg-red-500/20 border-red-500/40 text-white font-bold rounded-2xl hover:bg-red-500/40 px-6 backdrop-blur-xl transition-all"
+                >
+                  <LogOut className="h-4 w-4 mr-2" /> LOGOUT
+                </Button>
+              </>
+           ) : (
+              <>
+                <Button 
+                  onClick={handleFollow}
+                  disabled={followLoading}
+                  className={cn(
+                    "font-bold rounded-2xl px-6 transition-all shadow-xl",
+                    isFollowing 
+                      ? "glass-card bg-white/20 border-white/40 text-white hover:bg-white/30" 
+                      : "bg-white text-primary hover:bg-gray-100"
+                  )}
+                >
+                  {isFollowing ? <><UserMinus className="h-4 w-4 mr-2" /> UNFOLLOW</> : <><UserPlus className="h-4 w-4 mr-2" /> FOLLOW</>}
+                </Button>
+                <Button 
+                   onClick={handleMessage}
+                   className="glass-card bg-white/20 border-white/40 text-white font-bold rounded-2xl hover:bg-white/30 px-6 backdrop-blur-xl transition-all"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" /> MESSAGE
+                </Button>
+              </>
+           )}
+        </div>
+      </div>
 
-      <div className="px-4 sm:px-6 pb-6">
-        {/* Avatar */}
-        <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12 sm:-mt-14">
-          <div className="ring-4 ring-white rounded-full">
-            <UserAvatar src={user?.avatar} name={user?.name} size="2xl" />
+      <div className="px-6 sm:px-10 pb-10">
+        {/* Avatar & Basic Info */}
+        <div className="flex flex-col sm:flex-row sm:items-end gap-6 -mt-16 sm:-mt-20 relative z-10">
+          <div className="relative group">
+            <UserAvatar src={user?.avatar} name={user?.name} size="2xl" className="ring-8 ring-white shadow-2xl" />
+            <div className="absolute -bottom-1 -right-1 h-8 w-8 bg-green-500 rounded-full border-4 border-white shadow-lg" />
           </div>
 
-          <div className="flex-1 sm:pb-1">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl font-bold text-gray-900">
-                    {user?.name}
-                  </h1>
-                  <TierBadge tier={user?.tier} />
+          <div className="flex-1 pb-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight uppercase">{user?.name}</h1>
+              <TierBadge tier={user?.tier} size="md" className="py-1.5 px-3" />
+            </div>
+            <div className="flex flex-wrap items-center gap-5 mt-3">
+              {user?.niche && (
+                <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
+                   <Zap className="h-3.5 w-3.5 text-primary" />
+                   <span className="text-[11px] font-black text-primary uppercase tracking-widest">{user.niche}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
-                  {user?.city && (
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {user.city}
-                    </span>
-                  )}
-                  {user?.joinedAt && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5" />
-                      Joined {format(new Date(user.joinedAt), "MMM yyyy")}
-                    </span>
-                  )}
+              )}
+              {user?.city && (
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {user.city}
                 </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2">
-                {isOwnProfile ? (
-                  <div className="flex items-center gap-2">
-                    <Link href="/profile/edit">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="rounded-full shadow-sm hover:bg-gray-50"
-                      >
-                        <Edit3 className="h-4 w-4 mr-1.5" />
-                        Edit Profile
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 shadow-sm"
-                      onClick={() => signOut({ callbackUrl: "/login" })}
-                    >
-                      <LogOut className="h-4 w-4 mr-1.5" />
-                      Sign Out
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <Button
-                      onClick={handleFollow}
-                      variant={isFollowing ? "outline" : "default"}
-                      size="sm"
-                      className={`rounded-full ${
-                        !isFollowing
-                          ? "bg-[#FF6B35] hover:bg-[#e55a2b] text-white"
-                          : ""
-                      }`}
-                      disabled={followLoading}
-                    >
-                      {isFollowing ? (
-                        <>
-                          <UserMinus className="h-4 w-4 mr-1.5" />
-                          Unfollow
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="h-4 w-4 mr-1.5" />
-                          Follow
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={handleMessage}
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full"
-                    >
-                      <MessageCircle className="h-4 w-4 mr-1.5" />
-                      Message
-                    </Button>
-                  </>
-                )}
-              </div>
+              )}
+              {user?.joinedAt && (
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  <Calendar className="h-3.5 w-3.5" />
+                  HUSTLING SINCE {format(new Date(user.joinedAt), "MMM yyyy").toUpperCase()}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Bio */}
-        {user?.bio && (
-          <p className="mt-4 text-sm text-gray-600 leading-relaxed">
-            {user.bio}
-          </p>
-        )}
-
-        {/* Stats */}
-        <div className="flex items-center gap-6 mt-4 pt-4 border-t border-gray-100">
-          <div className="text-center">
-            <p className="text-lg font-bold text-gray-900">
-              {user?.postCount || 0}
-            </p>
-            <p className="text-xs text-gray-500">Posts</p>
-          </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-gray-900">
-              {followerCount}
-            </p>
-            <p className="text-xs text-gray-500">Followers</p>
-          </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-gray-900">
-              {user?.followingCount || user?.following?.length || 0}
-            </p>
-            <p className="text-xs text-gray-500">Following</p>
-          </div>
-          <div>
-            <PointsBadge points={user?.points} />
-          </div>
+        {/* Mobile Actions */}
+        <div className="flex sm:hidden gap-2 mt-6">
+           <Button className="flex-1 bg-primary text-white font-black text-[11px] rounded-xl h-12 shadow-lg shadow-primary/20">FOLLOW</Button>
+           <Button variant="outline" className="flex-1 font-black text-[11px] rounded-xl h-12 border-gray-100">MESSAGE</Button>
         </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mt-4">
-          {user?.niche && (
-            <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-              {user.niche}
-            </span>
-          )}
-          {user?.gmvRange && (
-            <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">
-              {user.gmvRange}
-            </span>
-          )}
+        {/* Bio */}
+        {user?.bio && (
+          <div className="mt-8 p-6 bg-gray-50/50 rounded-2xl border border-gray-100/50">
+            <p className="text-[15px] text-gray-700 leading-relaxed font-medium">
+              {user.bio}
+            </p>
+          </div>
+        )}
+
+        {/* Stats Grid - Bento Style */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
+              <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{user?.postCount || 0}</p>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Insights Shared</p>
+           </div>
+           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
+              <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{followerCount}</p>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Followers</p>
+           </div>
+           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
+              <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{user?.followingCount || user?.following?.length || 0}</p>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Following</p>
+           </div>
+           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
+              <div className="flex items-center gap-2">
+                 <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{user?.points || 0}</p>
+                 <Zap className="h-5 w-5 text-primary" />
+              </div>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Hustle Points</p>
+           </div>
         </div>
       </div>
     </div>

@@ -128,7 +128,7 @@ export default function EditProfilePage() {
               <textarea
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20 resize-none"
+                className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                 rows={4}
                 placeholder="Tell the community about yourself..."
               />
@@ -153,7 +153,7 @@ export default function EditProfilePage() {
                 <select
                   value={form.niche}
                   onChange={(e) => setForm({ ...form, niche: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-4 h-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20"
+                  className="w-full border border-gray-200 rounded-xl px-4 h-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="">Select Niche</option>
                   {niches.map((n) => (
@@ -170,7 +170,7 @@ export default function EditProfilePage() {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-[#FF6B35] hover:bg-[#e55a2b] text-white rounded-xl px-8"
+              className="bg-primary hover:bg-primary/90 text-white rounded-xl px-8"
             >
               <Save className="h-4 w-4 mr-2" />
               {loading ? "Saving..." : "Save Changes"}

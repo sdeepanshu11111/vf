@@ -58,7 +58,7 @@ export default function ModerationPage() {
     <div className="space-y-8 pb-12">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Shield className="h-6 w-6 text-[#FF6B35]" />
+          <Shield className="h-6 w-6 text-primary" />
           Moderation Dashboard
         </h2>
         <p className="text-gray-500 text-sm mt-1">

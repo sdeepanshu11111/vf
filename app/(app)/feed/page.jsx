@@ -97,7 +97,7 @@ export default function FeedPage() {
         {hasMore && !loading && posts.length > 0 && (
           <button
             onClick={() => fetchPosts()}
-            className="w-full py-3 text-sm font-medium text-gray-500 hover:text-[#FF6B35] transition-colors"
+            className="w-full py-3 text-sm font-medium text-gray-500 hover:text-primary transition-colors"
           >
             Load more posts
           </button>

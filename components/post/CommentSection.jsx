@@ -83,12 +83,12 @@ function CommentCard({ comment, postId, onReplyAdded }) {
               className={cn(
                 "flex items-center gap-1 text-xs font-medium transition-colors",
                 isUpvoted
-                  ? "text-[#FF6B35]"
+                  ? "text-primary"
                   : "text-gray-400 hover:text-gray-600",
               )}
             >
               <ArrowBigUp
-                className={cn("h-4 w-4", isUpvoted && "fill-[#FF6B35]")}
+                className={cn("h-4 w-4", isUpvoted && "fill-primary")}
               />
               {upvotes.length || ""}
             </button>
@@ -109,13 +109,13 @@ function CommentCard({ comment, postId, onReplyAdded }) {
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleReply()}
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20"
+                className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
               <Button
                 size="sm"
                 onClick={handleReply}
                 disabled={submitting}
-                className="bg-[#FF6B35] hover:bg-[#e55a2b] text-white rounded-lg h-8"
+                className="bg-primary hover:bg-primary/90 text-white rounded-lg h-8"
               >
                 Reply
               </Button>
@@ -200,12 +200,12 @@ export default function CommentSection({ postId }) {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              className="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/20"
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             <Button
               onClick={handleSubmit}
               disabled={submitting || !newComment.trim()}
-              className="bg-[#FF6B35] hover:bg-[#e55a2b] text-white rounded-xl"
+              className="bg-primary hover:bg-primary/90 text-white rounded-xl"
               size="sm"
             >
               Post

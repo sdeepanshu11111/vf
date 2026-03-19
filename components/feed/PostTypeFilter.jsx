@@ -20,7 +20,7 @@ export default function PostTypeFilter({ activeType, onTypeChange }) {
           className={cn(
             "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
             activeType === t.value
-              ? "bg-[#FF6B35] text-white shadow-sm"
+              ? "bg-primary text-white shadow-sm"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200",
           )}
         >

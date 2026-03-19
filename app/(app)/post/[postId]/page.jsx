@@ -46,7 +46,7 @@ export default function PostDetailPage() {
         <Button
           variant="link"
           onClick={() => router.back()}
-          className="text-[#FF6B35] mt-2"
+          className="text-primary mt-2"
         >
           Go back
         </Button>
