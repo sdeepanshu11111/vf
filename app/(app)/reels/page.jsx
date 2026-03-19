@@ -35,7 +35,14 @@ export default async function ReelsPage() {
   // Initial render handles just 5 items for immediate UX paint
   return (
     <>
-      <ReelsFeed initialProducts={initialReels} />
+      <ReelsFeed 
+        initialProducts={initialReels} 
+        serverStats={{
+          dbName: db.databaseName,
+          totalMatched: totalDocs,
+          initialCount: initialReels.length
+        }}
+      />
     </>
   );
 }

@@ -4,17 +4,20 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import ReelItem from "./ReelItem";
 import { Loader2 } from "lucide-react";
 
-export default function ReelsFeed({ initialProducts }) {
+export default function ReelsFeed({ initialProducts, serverStats }) {
   const containerRef = useRef(null);
   const observerRef = useRef(null); // Sentinel
   
   const [activeIndex, setActiveIndex] = useState(0);
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState(initialProducts || []);
   
   // Pagination states
   const [page, setPage] = useState(2); // initial payload is page 1
-  const [hasMore, setHasMore] = useState(initialProducts.length === 5);
+  const [hasMore, setHasMore] = useState((initialProducts?.length || 0) >= 5);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [debugInfo, setDebugInfo] = useState(serverStats || null);
+  const [showDebug, setShowDebug] = useState(false);
 
   // Observer to track which reel is active in viewport
   useEffect(() => {
@@ -37,15 +40,6 @@ export default function ReelsFeed({ initialProducts }) {
 
     return () => observer.disconnect();
   }, [products]);
-
-  const [debugInfo, setDebugInfo] = useState(null);
-  const [showDebug, setShowDebug] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setShowDebug(window.location.search.includes("debug=1"));
-    }
-  }, []);
 
   // Fetch logic for subsequent pages
   const fetchMoreData = useCallback(async () => {
