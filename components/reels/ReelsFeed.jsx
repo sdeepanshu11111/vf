@@ -38,17 +38,31 @@ export default function ReelsFeed({ initialProducts }) {
     return () => observer.disconnect();
   }, [products]);
 
+  const [debugInfo, setDebugInfo] = useState(null);
+  const [showDebug, setShowDebug] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setShowDebug(window.location.search.includes("debug=1"));
+    }
+  }, []);
+
   // Fetch logic for subsequent pages
   const fetchMoreData = useCallback(async () => {
     if (isLoading || !hasMore) return;
     
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/reels?page=${page}&limit=5&_t=${Date.now()}`);
+      const url = `/api/reels?page=${page}&limit=5&_t=${Date.now()}`;
+      const res = await fetch(url);
+      
       if (!res.ok) {
+        setDebugInfo({ status: res.status, url, error: "HTTP Error" });
         throw new Error(`HTTP error! status: ${res.status}`);
       }
+      
       const json = await res.json();
+      setDebugInfo({ ...json, url, lastFetch: new Date().toLocaleTimeString() });
       
       if (json.success) {
         setProducts(prev => [...prev, ...json.data]);
@@ -93,6 +107,18 @@ export default function ReelsFeed({ initialProducts }) {
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
       
+      {showDebug && debugInfo && (
+        <div className="fixed top-4 left-4 z-[100] bg-black/80 text-white p-3 rounded-lg text-[10px] font-mono border border-white/20 max-w-[200px] pointer-events-none">
+          <div className="font-bold border-bottom mb-1 uppercase">Reels API Debug</div>
+          <div>DB: {debugInfo.dbName || "Unknown"}</div>
+          <div>Total Found: {debugInfo.totalMatched ?? "N/A"}</div>
+          <div>Received: {debugInfo.count ?? 0}</div>
+          <div>HasMore: {String(debugInfo.hasMore)}</div>
+          <div>Status: {debugInfo.status || 200}</div>
+          <div className="mt-1 opacity-50 truncate">{debugInfo.url}</div>
+        </div>
+      )}
+
       {products.map((product, index) => (
         <div 
           key={`${product.vfprodid}-${index}`} 

@@ -9,6 +9,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "5", 10);
+    const skip = (page - 1) * limit;
+    
     console.log("Reels API Request:", { page, limit });
     const db = await getDb();
     if (!db) {
