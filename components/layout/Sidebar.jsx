@@ -16,6 +16,7 @@ import {
   LogOut,
   ChevronUp,
   Bookmark,
+  Clapperboard,
 } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
@@ -31,6 +32,7 @@ import {
 const navItems = [
   { href: "/feed", icon: Home, label: "Home" },
   { href: "/explore", icon: Compass, label: "Explore" },
+  { href: "/reels", icon: Clapperboard, label: "Reels" },
   { href: "/saved", icon: Bookmark, label: "Saved" },
   { href: "/notifications", icon: Bell, label: "Notifications" },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
@@ -181,7 +183,7 @@ export default function Sidebar() {
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-4 left-4 right-4 h-16 glass-card rounded-[1.25rem] z-50 flex items-center justify-around px-2 shadow-2xl">
-        {navItems.slice(0, 4).map((item) => {
+        {navItems.slice(0, 5).map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
             <Link
