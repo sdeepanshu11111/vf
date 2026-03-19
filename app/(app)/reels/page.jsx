@@ -1,6 +1,9 @@
 import ReelsFeed from "@/components/reels/ReelsFeed";
 import { getDb } from "@/lib/mongodb";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Reels - vF Community",
   description: "Swipe to discover trending products.",
