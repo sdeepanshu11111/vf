@@ -22,6 +22,8 @@ export default async function ReelsPage() {
     ]
   };
 
+  const totalDocs = await db.collection("products").countDocuments(query);
+
   const productData = await db.collection("products")
     .find(query)
     .limit(5)
