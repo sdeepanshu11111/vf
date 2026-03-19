@@ -5,7 +5,7 @@ export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
   // Public paths
-  const publicPaths = ["/login", "/signup", "/api/auth", "/api/invites", "/api/reels"];
+  const publicPaths = ["/login", "/signup", "/api/auth", "/api/invites", "/api/reels", "/reels"];
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
 
   if (isPublic) {

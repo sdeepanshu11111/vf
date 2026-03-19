@@ -9,9 +9,12 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "5", 10);
-    const skip = (page - 1) * limit;
-
+    console.log("Reels API Request:", { page, limit });
     const db = await getDb();
+    if (!db) {
+      console.error("Database connection failed");
+      return NextResponse.json({ success: false, error: "Database not available" }, { status: 500 });
+    }
 
     // MongoDB query to find products exactly with `.mp4` string
     const query = {
@@ -22,6 +25,9 @@ export async function GET(request) {
         { "primary_video": { $regex: "\\.mp4", $options: "i" } },
       ]
     };
+
+    const totalDocs = await db.collection("products").countDocuments(query);
+    console.log("Reels API Query Result:", { found: totalDocs });
 
     const products = await db.collection("products")
       .find(query)
@@ -41,6 +47,10 @@ export async function GET(request) {
       page,
       limit,
       hasMore: products.length === limit,
+      count: products.length,
+      totalMatched: totalDocs,
+      dbName: db.databaseName,
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error("Error fetching reels:", error);

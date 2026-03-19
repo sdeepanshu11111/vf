@@ -44,16 +44,22 @@ export default function ReelsFeed({ initialProducts }) {
     
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/reels?page=${page}&limit=5`);
+      const res = await fetch(`/api/reels?page=${page}&limit=5&_t=${Date.now()}`);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
       const json = await res.json();
       
       if (json.success) {
         setProducts(prev => [...prev, ...json.data]);
         setPage(prev => prev + 1);
         setHasMore(json.hasMore);
+      } else {
+        toast.error("Failed to load more reels.");
       }
     } catch (err) {
       console.error("Failed to append reels", err);
+      toast.error("Network error: Could not load more reels.");
     } finally {
       setIsLoading(false);
     }
