@@ -57,6 +57,27 @@ export default function FeedReelCard({ reel }) {
     }
   }, [reel._id, user]);
 
+  // Pause video when scrolled out of view
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) {
+          videoElement.pause();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(videoElement);
+
+    return () => {
+      observer.unobserve(videoElement);
+    };
+  }, []);
+
   const togglePlay = useCallback(() => {
     if (!videoRef.current) return;
     if (isPlaying) {
