@@ -210,9 +210,9 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <div className="lg:hidden fixed bottom-6 inset-x-0 z-50 flex items-center justify-center pointer-events-none pb-env(safe-area-inset-bottom)">
-        <nav className="glass-card bg-background/70 dark:bg-[#020617]/70 backdrop-blur-3xl px-6 py-3 rounded-full flex items-center gap-6 sm:gap-8 border-white/20 dark:border-white/10 shadow-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/5">
-          {navItems.slice(0, 5).map((item) => {
+      <div className="lg:hidden fixed bottom-6 inset-x-0 z-50 px-4 flex items-center justify-center pointer-events-none pb-env(safe-area-inset-bottom)">
+        <nav className="glass-card w-full max-w-md bg-background/80 dark:bg-[#020617]/80 backdrop-blur-3xl px-8 py-3.5 rounded-full flex items-center justify-between border-white/20 dark:border-white/10 shadow-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/5">
+          {navItems.filter((i) => ["Home", "Founders", "Insights", "Notifications"].includes(i.label)).map((item) => {
             const isActive = pathname.startsWith(item.href);
             const showBadge = item.badge && unreadCount > 0;
             return (

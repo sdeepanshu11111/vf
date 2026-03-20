@@ -78,9 +78,9 @@ export default function PostCard({ post, onUpdate }) {
       initial={{ opacity: 0, scale: 0.98, y: 15 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-      className="glass-card mb-6 group rounded-[2.5rem] p-1.5 border-white/20 dark:border-white/5 shadow-xl shadow-black/5 hover:shadow-2xl transition-all duration-500"
+      className="glass-card mb-4 sm:mb-6 group rounded-3xl sm:rounded-[2.5rem] p-1 sm:p-1.5 border-white/20 dark:border-white/5 shadow-xl shadow-black/5 hover:shadow-2xl transition-all duration-500"
     >
-      <div className="bg-white/60 dark:bg-black/40 rounded-[2rem] p-6 sm:p-7 backdrop-blur-xl">
+      <div className="bg-white/60 dark:bg-black/40 rounded-[1.75rem] sm:rounded-[2rem] p-4 sm:p-7 backdrop-blur-xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-4">
@@ -142,7 +142,7 @@ export default function PostCard({ post, onUpdate }) {
 
         {/* Media */}
         {post.images?.length > 0 && (
-          <div className="mt-6 overflow-hidden rounded-[2rem] border border-white/10 dark:border-white/5 relative group/media shadow-lg">
+          <div className="mt-4 sm:mt-6 overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white/10 dark:border-white/5 relative group/media shadow-lg">
             <img loading="lazy" src={post.images[0]} alt="Post" className="w-full object-cover max-h-[500px] transform group-hover/media:scale-105 transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)]" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover/media:opacity-100 transition-opacity duration-500 pointer-events-none" />
           </div>

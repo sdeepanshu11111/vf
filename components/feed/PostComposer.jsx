@@ -56,8 +56,8 @@ export default function PostComposer({ onPostCreated }) {
   if (!session) return null;
 
   return (
-    <div className="bg-white dark:bg-[#0f172a] mb-8 overflow-visible rounded-3xl shadow-sm border border-gray-100 dark:border-white/5 relative z-10">
-      <div className="p-5 sm:p-6 transition-all">
+    <div className="bg-white dark:bg-[#0f172a] mb-6 sm:mb-8 overflow-visible rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-white/5 relative z-10">
+      <div className="p-4 sm:p-6 transition-all">
         <div className="flex items-start gap-4">
           <UserAvatar src={session.user.avatar} name={session.user.name} size="md" className="shrink-0 ring-4 ring-gray-50 dark:ring-white/5 shadow-sm mt-1" />
           <div className="flex-1 min-w-0">
