@@ -147,6 +147,7 @@ export default function FeedReelCard({ reel }) {
           muted={isMuted}
           loop
           playsInline
+          preload="none"
           className="absolute inset-0 w-full h-full object-cover"
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}

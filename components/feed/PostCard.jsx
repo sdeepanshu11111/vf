@@ -143,7 +143,7 @@ export default function PostCard({ post, onUpdate }) {
         {/* Media */}
         {post.images?.length > 0 && (
           <div className="mt-6 overflow-hidden rounded-[2rem] border border-white/10 dark:border-white/5 relative group/media shadow-lg">
-            <img src={post.images[0]} alt="Post" className="w-full object-cover max-h-[500px] transform group-hover/media:scale-105 transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)]" />
+            <img loading="lazy" src={post.images[0]} alt="Post" className="w-full object-cover max-h-[500px] transform group-hover/media:scale-105 transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)]" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover/media:opacity-100 transition-opacity duration-500 pointer-events-none" />
           </div>
         )}

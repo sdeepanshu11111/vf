@@ -35,6 +35,7 @@ export default function UserAvatar({
   return (
     <div className={cn("relative inline-flex shrink-0", className)}>
       <img
+        loading="lazy"
         src={avatarUrl}
         alt={name || "User"}
         className={cn(

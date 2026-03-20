@@ -154,7 +154,7 @@ export default function FeedPage() {
             <p className="text-sm text-gray-400 mt-2">Be the first to share something!</p>
           </motion.div>
         ) : (
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence>
             {feedItems.map((item) =>
               item.type === "post" ? (
                 <motion.div
