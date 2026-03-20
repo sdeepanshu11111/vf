@@ -6,7 +6,6 @@ import { useSession, signOut } from "next-auth/react";
 import {
   MapPin,
   Calendar,
-  MessageCircle,
   UserPlus,
   UserMinus,
   Edit3,
@@ -46,20 +45,6 @@ export default function ProfileHeader({ user, isOwnProfile }) {
     setFollowLoading(false);
   };
 
-  const handleMessage = async () => {
-    try {
-      const res = await fetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ participantId: user._id.toString() }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        window.location.href = `/messages/${data.conversationId}`;
-      }
-    } catch (e) { console.error(e); }
-  };
-
   return (
     <div className="bento-card overflow-hidden mb-8">
       {/* Cover Area */}
@@ -96,12 +81,6 @@ export default function ProfileHeader({ user, isOwnProfile }) {
                   )}
                 >
                   {isFollowing ? <><UserMinus className="h-4 w-4 mr-2" /> UNFOLLOW</> : <><UserPlus className="h-4 w-4 mr-2" /> FOLLOW</>}
-                </Button>
-                <Button 
-                   onClick={handleMessage}
-                   className="glass-card bg-white/20 border-white/40 text-white font-bold rounded-2xl hover:bg-white/30 px-6 backdrop-blur-xl transition-all"
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" /> MESSAGE
                 </Button>
               </>
            )}
@@ -145,10 +124,22 @@ export default function ProfileHeader({ user, isOwnProfile }) {
         </div>
 
         {/* Mobile Actions */}
-        <div className="flex sm:hidden gap-2 mt-6">
-           <Button className="flex-1 bg-primary text-white font-black text-[11px] rounded-xl h-12 shadow-lg shadow-primary/20">FOLLOW</Button>
-           <Button variant="outline" className="flex-1 font-black text-[11px] rounded-xl h-12 border-gray-100">MESSAGE</Button>
-        </div>
+        {!isOwnProfile && (
+          <div className="flex sm:hidden gap-2 mt-6">
+             <Button 
+               onClick={handleFollow}
+               disabled={followLoading}
+               className={cn(
+                 "flex-1 font-black text-[11px] rounded-xl h-12 shadow-lg transition-all",
+                 isFollowing
+                   ? "bg-gray-100 text-gray-600 shadow-none border border-gray-200"
+                   : "bg-primary text-white shadow-primary/20"
+               )}
+             >
+               {isFollowing ? "UNFOLLOW" : "FOLLOW"}
+             </Button>
+          </div>
+        )}
 
         {/* Bio */}
         {user?.bio && (

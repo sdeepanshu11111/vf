@@ -14,8 +14,6 @@ async function seed() {
     await db.collection("posts").deleteMany({});
     await db.collection("comments").deleteMany({});
     await db.collection("notifications").deleteMany({});
-    await db.collection("conversations").deleteMany({});
-    await db.collection("messages").deleteMany({});
     await db.collection("invites").deleteMany({});
 
     console.log("Seeding users...");
@@ -152,34 +150,6 @@ async function seed() {
       createdAt: new Date(),
     };
     await db.collection("comments").insertOne(comment);
-
-    console.log("Seeding conversations...");
-    const convo = {
-      _id: new ObjectId(),
-      participants: [users[0]._id.toString(), users[1]._id.toString()],
-      lastMessage: "Thanks for the tips!",
-      lastAt: new Date(),
-      participantIds: [users[0]._id.toString(), users[1]._id.toString()],
-    };
-    await db.collection("conversations").insertOne(convo);
-
-    const messages = [
-      {
-        conversationId: convo._id.toString(),
-        senderId: users[0]._id.toString(),
-        content: "Hey Priya, loved your strategy on Instagram.",
-        readAt: new Date(Date.now() - 50000),
-        createdAt: new Date(Date.now() - 100000),
-      },
-      {
-        conversationId: convo._id.toString(),
-        senderId: users[1]._id.toString(),
-        content: "Thanks Arjun! Getting there.",
-        readAt: null,
-        createdAt: new Date(),
-      },
-    ];
-    await db.collection("messages").insertMany(messages);
 
     console.log("Seeding notifications...");
     const notification = {

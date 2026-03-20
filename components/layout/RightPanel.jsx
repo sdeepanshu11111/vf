@@ -84,7 +84,7 @@ export default function RightPanel() {
         </div>
       </div>
 
-      {/* Suggested People */}
+      {/* Recommended Founders */}
       {suggestedUsers.length > 0 && (
         <div className="bento-card border-white/20 dark:border-white/5 shadow-xl shadow-primary/5">
           <div className="p-5">
@@ -92,7 +92,7 @@ export default function RightPanel() {
               <div className="h-8 w-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
                 <Users className="h-4 w-4 text-blue-500" />
               </div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Hustlers</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Promising Founders</h3>
             </div>
             <div className="space-y-4">
               {suggestedUsers.map((user) => (

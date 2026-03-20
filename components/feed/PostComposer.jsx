@@ -9,10 +9,10 @@ import UserAvatar from "@/components/ui/UserAvatar";
 import { cn } from "@/lib/utils";
 
 const postTypes = [
-  { value: "tip", label: "Tip", icon: Zap, color: "text-blue-500 bg-blue-50 border-blue-100" },
-  { value: "win", label: "Win", icon: Zap, color: "text-green-500 bg-green-50 border-green-100" },
-  { value: "question", label: "Ask", icon: Zap, color: "text-purple-500 bg-purple-50 border-purple-100" },
-  { value: "sourcing", label: "Source", icon: Zap, color: "text-amber-500 bg-amber-50 border-amber-100" },
+  { value: "tip", label: "Growth Tip", icon: Zap, color: "text-blue-500 bg-blue-50 border-blue-100" },
+  { value: "win", label: "Share a Win", icon: Zap, color: "text-green-500 bg-green-50 border-green-100" },
+  { value: "question", label: "Ask for Help", icon: Zap, color: "text-purple-500 bg-purple-50 border-purple-100" },
+  { value: "sourcing", label: "Sourcing Tip", icon: Zap, color: "text-amber-500 bg-amber-50 border-amber-100" },
 ];
 
 export default function PostComposer({ onPostCreated }) {
@@ -62,7 +62,7 @@ export default function PostComposer({ onPostCreated }) {
           <UserAvatar src={session.user.avatar} name={session.user.name} size="md" className="shrink-0 ring-4 ring-gray-50 dark:ring-white/5 shadow-sm mt-1" />
           <div className="flex-1 min-w-0">
             <textarea
-              placeholder="What's on your mind?"
+              placeholder="Share a win, ask for help, or drop a sourcing tip..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onFocus={() => setIsExpanded(true)}

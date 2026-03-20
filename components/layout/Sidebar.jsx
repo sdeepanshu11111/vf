@@ -9,7 +9,6 @@ import {
   Home,
   Compass,
   Bell,
-  MessageCircle,
   Trophy,
   User,
   Settings,
@@ -32,11 +31,10 @@ import {
 
 const navItems = [
   { href: "/feed", icon: Home, label: "Home" },
-  { href: "/explore", icon: Compass, label: "Explore" },
-  { href: "/reels", icon: Clapperboard, label: "Reels" },
+  { href: "/explore", icon: Compass, label: "Founders" },
+  { href: "/reels", icon: Clapperboard, label: "Insights" },
   { href: "/saved", icon: Bookmark, label: "Saved" },
   { href: "/notifications", icon: Bell, label: "Notifications", badge: true },
-  { href: "/messages", icon: MessageCircle, label: "Messages" },
   { href: "/members", icon: Trophy, label: "Leaderboard" },
 ];
 
