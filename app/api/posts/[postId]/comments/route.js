@@ -124,15 +124,35 @@ export async function POST(request, { params }) {
     const post = await db
       .collection("posts")
       .findOne({ _id: new ObjectId(params.postId) });
+
+    let notificationTargetUserId = null;
+
+    if (parentId) {
+      // If it's a reply, notify the parent comment author
+      const parentComment = await db
+        .collection("comments")
+        .findOne({ _id: new ObjectId(parentId) });
+      if (parentComment && parentComment.authorId !== session.user.id) {
+        notificationTargetUserId = parentComment.authorId;
+      }
+    } else if (post && post.authorId !== session.user.id) {
+      // If it's a top-level comment, notify the post author
+      notificationTargetUserId = post.authorId;
+    }
+
     if (post && post.authorId !== session.user.id) {
+      // Still award points to post author for the interaction regardless of reply depth
       await db
         .collection("users")
         .updateOne(
           { _id: new ObjectId(post.authorId) },
           { $inc: { points: 2 } },
         );
+    }
+
+    if (notificationTargetUserId) {
       await db.collection("notifications").insertOne({
-        userId: post.authorId,
+        userId: notificationTargetUserId,
         actorId: session.user.id,
         type: parentId ? "reply" : "comment",
         postId: params.postId,

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   Home,
   Compass,
@@ -34,7 +35,7 @@ const navItems = [
   { href: "/explore", icon: Compass, label: "Explore" },
   { href: "/reels", icon: Clapperboard, label: "Reels" },
   { href: "/saved", icon: Bookmark, label: "Saved" },
-  { href: "/notifications", icon: Bell, label: "Notifications" },
+  { href: "/notifications", icon: Bell, label: "Notifications", badge: true },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
   { href: "/members", icon: Trophy, label: "Leaderboard" },
 ];
@@ -43,6 +44,27 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user;
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!session) return;
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/notifications");
+        const data = await res.json();
+        setUnreadCount(data.unreadCount || 0);
+      } catch {}
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, [session]);
+
+  useEffect(() => {
+    if (pathname.startsWith("/notifications")) {
+      setUnreadCount(0);
+    }
+  }, [pathname]);
 
   return (
     <>
@@ -69,6 +91,7 @@ export default function Sidebar() {
         <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-2 no-scrollbar">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
+            const showBadge = item.badge && unreadCount > 0;
             return (
               <Link
                 key={item.href}
@@ -87,7 +110,14 @@ export default function Sidebar() {
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <item.icon className={cn("h-5 w-5 transition-transform duration-300 group-hover:scale-110", isActive ? "stroke-[2.5px]" : "stroke-2")} />
+                <div className="relative shrink-0">
+                  <item.icon className={cn("h-5 w-5 transition-transform duration-300 group-hover:scale-110", isActive ? "stroke-[2.5px]" : "stroke-2")} />
+                  {showBadge && (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white shadow-md shadow-red-500/40 ring-2 ring-background animate-pulse">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
                 {item.label}
               </Link>
             );
@@ -186,6 +216,7 @@ export default function Sidebar() {
         <nav className="glass-card bg-background/70 dark:bg-[#020617]/70 backdrop-blur-3xl px-6 py-3 rounded-full flex items-center gap-6 sm:gap-8 border-white/20 dark:border-white/10 shadow-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/5">
           {navItems.slice(0, 5).map((item) => {
             const isActive = pathname.startsWith(item.href);
+            const showBadge = item.badge && unreadCount > 0;
             return (
               <Link
                 key={item.href}
@@ -193,7 +224,14 @@ export default function Sidebar() {
                 className="group relative flex items-center justify-center transition-all duration-300"
               >
                 <div className={cn("absolute inset-0 bg-primary/20 rounded-full blur-md transition-opacity duration-300", isActive ? "opacity-100" : "opacity-0")} />
-                <item.icon className={cn("h-6 w-6 relative z-10 transition-all duration-300", isActive ? "stroke-[2.5px] text-primary" : "stroke-2 text-muted-foreground")} />
+                <div className="relative">
+                  <item.icon className={cn("h-6 w-6 relative z-10 transition-all duration-300", isActive ? "stroke-[2.5px] text-primary" : "stroke-2 text-muted-foreground")} />
+                  {showBadge && (
+                    <span className="absolute -top-2 -right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white shadow-md animate-pulse z-20 ring-2 ring-background">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
               </Link>
             );
           })}
