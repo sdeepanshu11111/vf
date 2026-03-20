@@ -28,20 +28,34 @@ export default function ReelItem({ product, isActive }) {
   );
   const [isSaved, setIsSaved] = useState(false);
   const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      user: "Alex_Ecom",
-      text: "Is this product actually good for scaling?",
-    },
-    {
-      id: 2,
-      user: "Sarah_Dropship",
-      text: "Tested this last week, insane ROAS!",
-    },
-    { id: 3, user: "DropshipKing", text: "What's the average shipping time?" },
-  ]);
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [statusLoaded, setStatusLoaded] = useState(false);
+
+  // Fetch initial status and comments when active or just mounted
+  useEffect(() => {
+    if (!product._id) return;
+
+    // Fetch comments
+    fetch(`/api/reels/${product._id}/comments`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setComments(data.comments || []);
+      })
+      .catch(err => console.error(err));
+
+    // Fetch user specific status
+    if (user && !statusLoaded) {
+      fetch(`/api/reels/${product._id}/status`)
+        .then(res => res.json())
+        .then(data => {
+          setIsLiked(data.isLiked);
+          setIsSaved(data.isSaved);
+          setStatusLoaded(true);
+        })
+        .catch(err => console.error(err));
+    }
+  }, [product._id, user, statusLoaded]);
 
   // Robustly extract video URL from productData schema variations
   let videoUrl = null;
@@ -57,7 +71,6 @@ export default function ReelItem({ product, isActive }) {
 
   // Fallback to gif or image if no video
   const mediaUrl = videoUrl || product.primary_gif || product.primary_image;
-  // It's a video if we found a valid video URL, or if the media URL ends in a video extension
   const isVideo = !!videoUrl || !!mediaUrl?.match(/\.(mp4|webm|ogg)$/i);
 
   // Playback control
@@ -72,15 +85,44 @@ export default function ReelItem({ product, isActive }) {
     }
   }, [isActive]);
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    if (!user) return toast.error("Please login to like reels");
+    
+    // Optimistic UI update
+    const prevLiked = isLiked;
     setIsLiked(!isLiked);
     setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
-    if (!isLiked) toast.success("Added to liked products!");
+    if (!isLiked) toast.success("Added to liked reels!");
+
+    try {
+      const res = await fetch(`/api/reels/${product._id}/like`, { method: "POST" });
+      const data = await res.json();
+      // Only revert if failed
+      if (res.status !== 200) {
+        setIsLiked(prevLiked);
+        setLikeCount((prev) => (prevLiked ? prev + 1 : prev - 1));
+      }
+    } catch (e) {
+      setIsLiked(prevLiked);
+      setLikeCount((prev) => (prevLiked ? prev + 1 : prev - 1));
+    }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!user) return toast.error("Please login to save reels");
+
+    const prevSaved = isSaved;
     setIsSaved(!isSaved);
     if (!isSaved) toast.success("Saved to your collections!");
+
+    try {
+      const res = await fetch(`/api/reels/${product._id}/save`, { method: "POST" });
+      if (res.status !== 200) {
+        setIsSaved(prevSaved);
+      }
+    } catch (e) {
+      setIsSaved(prevSaved);
+    }
   };
 
   const handleShare = async () => {
@@ -100,14 +142,33 @@ export default function ReelItem({ product, isActive }) {
     }
   };
 
-  const submitComment = (e) => {
+  const submitComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
-    setComments([
-      ...comments,
-      { id: Date.now(), user: "You", text: newComment },
-    ]);
+    if (!newComment.trim() || !user) {
+      if (!user) toast.error("Please login to comment");
+      return;
+    }
+
+    const tempText = newComment.trim();
     setNewComment("");
+    
+    try {
+      const res = await fetch(`/api/reels/${product._id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: tempText })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setComments((prev) => [data.comment, ...prev]);
+        toast.success("Comment posted!");
+      } else {
+        toast.error("Failed to post comment");
+      }
+    } catch (err) {
+      toast.error("Network error");
+    }
   };
 
   return (
@@ -266,57 +327,81 @@ export default function ReelItem({ product, isActive }) {
       {/* Comments Drawer (Slide Up) */}
       <div
         className={cn(
-          "absolute bottom-0 left-0 right-0 lg:left-0 lg:right-24 h-[60%] bg-[#0f172a] rounded-t-3xl border-t border-white/10 transition-transform duration-300 ease-out z-50 flex flex-col",
-          showComments ? "translate-y-0" : "translate-y-full",
+          "absolute bottom-0 left-0 right-0 lg:left-0 lg:right-24 h-[65%] lg:h-[75%] rounded-t-[2.5rem] border-t border-white/20 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] z-50 flex flex-col overflow-hidden",
+          showComments ? "translate-y-0" : "translate-y-full"
         )}
       >
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h3 className="text-white font-bold text-lg">
-            Comments ({comments.length})
+        {/* Background Blur Layer */}
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
+        {/* Header */}
+        <div className="relative z-10 flex items-center justify-between p-5 border-b border-white/10 shrink-0">
+          <h3 className="text-white font-black text-lg tracking-tight flex items-center gap-2">
+            Comments 
+            <span className="px-2 py-0.5 rounded-md bg-white/10 text-xs font-bold text-white/80">
+              {comments.length}
+            </span>
           </h3>
           <button
             onClick={() => setShowComments(false)}
-            className="p-2 rounded-full hover:bg-white/10 transition-colors"
+            className="p-2.5 rounded-full bg-white/5 hover:bg-white/20 transition-colors active:scale-95"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-5 h-5 text-white/80" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {comments.map((c) => (
-            <div key={c.id} className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                <span className="text-primary text-xs font-bold">
-                  {c.user[0]}
-                </span>
-              </div>
-              <div>
-                <span className="text-gray-400 text-xs font-medium">
-                  {c.user}
-                </span>
-                <p className="text-white text-sm">{c.text}</p>
-              </div>
+        {/* Comments List */}
+        <div className="relative z-10 flex-1 overflow-y-auto p-5 space-y-6 hide-scrollbar flex flex-col">
+          {comments.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center opacity-70">
+              <MessageCircle className="w-12 h-12 text-white/30 mb-3" />
+              <p className="text-white font-medium text-sm">No comments yet.</p>
+              <p className="text-white/60 text-xs mt-1">Be the first to share your thoughts!</p>
             </div>
-          ))}
+          ) : (
+            comments.map((c) => (
+              <div key={c.id} className="flex gap-3 items-start animate-fade-in">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-rose-500 flex items-center justify-center shrink-0 shadow-lg ring-2 ring-black/50">
+                  <span className="text-white text-xs font-black uppercase shadow-sm">
+                    {c.user?.[0] || "?"}
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-white/70 text-xs font-bold bg-white/5 px-2 py-0.5 rounded-md">
+                      {c.user || "Anonymous"}
+                    </span>
+                  </div>
+                  <p className="text-white text-[15px] font-medium mt-1.5 leading-snug drop-shadow-sm">
+                    {c.text}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
+        {/* Input Form */}
         <form
           onSubmit={submitComment}
-          className="p-4 border-t border-white/10 flex gap-2"
+          className="relative z-10 p-4 border-t border-white/10 bg-black/40 backdrop-blur-lg flex gap-3 items-center shrink-0 pb-env(safe-area-inset-bottom)"
         >
-          <input
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Add a comment..."
-            className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-          />
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Add a comment..."
+              className="w-full bg-white/10 border border-white/10 hover:bg-white/15 focus:bg-white/20 rounded-2xl px-5 py-3.5 text-white text-[15px] font-medium placeholder:text-white/40 focus:outline-none focus:border-white/30 transition-all shadow-inner"
+            />
+          </div>
           <button
             type="submit"
             disabled={!newComment.trim()}
-            className="w-10 h-10 rounded-full bg-primary flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            className="w-12 h-12 rounded-2xl bg-white text-black hover:bg-white/90 flex items-center justify-center disabled:opacity-30 disabled:hover:bg-white disabled:cursor-not-allowed shrink-0 transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
           >
-            <Send className="w-4 h-4 text-white -ml-0.5 mt-0.5" />
+            <Send className="w-5 h-5 -ml-1 mt-0.5 fill-black" />
           </button>
         </form>
       </div>

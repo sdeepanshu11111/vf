@@ -14,31 +14,34 @@ export default function FeedPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchPosts = useCallback(async (reset = false) => {
-    const nextPage = reset ? 1 : page;
-    setLoading(true);
-    try {
-      const url = new URL("/api/posts", window.location.origin);
-      if (filterType) url.searchParams.set("type", filterType);
-      url.searchParams.set("page", nextPage.toString());
+  const fetchPosts = useCallback(
+    async (reset = false) => {
+      const nextPage = reset ? 1 : page;
+      setLoading(true);
+      try {
+        const url = new URL("/api/posts", window.location.origin);
+        if (filterType) url.searchParams.set("type", filterType);
+        url.searchParams.set("page", nextPage.toString());
 
-      const res = await fetch(url);
-      const data = await res.json();
+        const res = await fetch(url);
+        const data = await res.json();
 
-      if (reset) {
-        setPosts(data.posts || []);
-      } else {
-        setPosts((prev) => [...prev, ...(data.posts || [])]);
+        if (reset) {
+          setPosts(data.posts || []);
+        } else {
+          setPosts((prev) => [...prev, ...(data.posts || [])]);
+        }
+
+        setHasMore((data.posts?.length || 0) === 20);
+        setPage(nextPage + 1);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setHasMore((data.posts?.length || 0) === 20);
-      setPage(nextPage + 1);
-    } catch (error) {
-      console.error("Failed to fetch posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [filterType, page]);
+    },
+    [filterType, page],
+  );
 
   useEffect(() => {
     fetchPosts(true);
@@ -50,7 +53,7 @@ export default function FeedPage() {
 
       <PostComposer onPostCreated={() => fetchPosts(true)} />
 
-      <div className="sticky top-0 z-10 bg-[#F5F5F5] py-2">
+      <div className="sticky top-0 z-10  py-2">
         <PostTypeFilter activeType={filterType} onTypeChange={setFilterType} />
       </div>
 
