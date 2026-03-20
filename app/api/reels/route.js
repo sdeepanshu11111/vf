@@ -32,9 +32,10 @@ export async function GET(request) {
     console.log("Reels API Query Result:", { found: totalDocs });
 
     const products = await db.collection("products")
-      .find(query)
-      .skip(skip)
-      .limit(limit)
+      .aggregate([
+        { $match: query },
+        { $sample: { size: limit } }
+      ])
       .toArray();
 
     // Serialize ObjectId to pass down to Client Components

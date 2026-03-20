@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2 } from "lucide-react";
 
 // Inject reel strip after every N posts
-const REEL_INJECT_EVERY = 5;
+const REEL_INJECT_EVERY = 3;
 
 function PostSkeleton() {
   return (
