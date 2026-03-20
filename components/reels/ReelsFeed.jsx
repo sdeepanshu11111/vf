@@ -93,7 +93,7 @@ export default function ReelsFeed({ initialProducts, serverStats }) {
 
   return (
     <div 
-      className="fixed top-0 bottom-0 left-0 right-0 lg:left-[280px] xl:right-[340px] bg-black z-20 overflow-y-auto snap-y snap-mandatory touch-pan-y hide-scrollbar"
+      className="fixed inset-0 w-full h-[100dvh] bg-black z-30 lg:relative lg:max-w-[420px] lg:mx-auto lg:h-[calc(100vh-120px)] lg:bg-black lg:z-20 overflow-y-auto overflow-x-hidden snap-y snap-mandatory touch-pan-y hide-scrollbar lg:rounded-[2.5rem] lg:shadow-[0_0_50px_rgba(0,0,0,0.5)] lg:border-[8px] lg:border-black/80 lg:ring-1 lg:ring-white/10 lg:mt-4"
       ref={containerRef}
     >
       <style dangerouslySetInnerHTML={{__html: `
@@ -117,7 +117,7 @@ export default function ReelsFeed({ initialProducts, serverStats }) {
         <div 
           key={`${product.vfprodid}-${index}`} 
           data-index={index}
-          className="reel-item w-full h-[100dvh] snap-start snap-always"
+          className="reel-item w-full h-full snap-start snap-always"
         >
           <ReelItem product={product} isActive={activeIndex === index} />
         </div>

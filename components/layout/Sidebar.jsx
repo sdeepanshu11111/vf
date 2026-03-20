@@ -47,18 +47,18 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed left-4 top-4 bottom-4 w-[260px] glass-card rounded-[2rem] z-40 overflow-hidden">
+      <aside className="hidden lg:flex flex-col fixed left-4 top-4 bottom-4 w-[260px] glass-card rounded-3xl z-40 overflow-hidden shadow-2xl shadow-primary/5 border-white/20 dark:border-white/5">
         {/* Logo */}
         <div className="p-8 pb-6">
-          <Link href="/feed" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 group-hover:rotate-6 transition-transform">
-              <span className="font-black text-white text-lg">vF</span>
+          <Link href="/feed" className="flex items-center gap-3.5 group">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-300">
+              <span className="font-black text-white text-lg tracking-tighter">vF</span>
             </div>
             <div>
-              <span className="font-bold text-lg tracking-tight text-gray-900 block leading-none">
+              <span className="font-bold text-lg tracking-tight text-foreground block leading-none">
                 vF Community
               </span>
-              <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1 block">
+              <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1.5 block opacity-90">
                 The Inner Circle
               </span>
             </div>
@@ -66,7 +66,7 @@ export default function Sidebar() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto pt-2">
+        <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-2 no-scrollbar">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -74,44 +74,44 @@ export default function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-bold transition-all group",
+                  "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-medium transition-all group",
                   isActive
-                    ? "text-primary"
-                    : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
+                    ? "text-primary font-bold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeNav"
-                    className="absolute inset-0 bg-primary/10 rounded-2xl -z-10"
+                    className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-2xl -z-10 border border-primary/20"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <item.icon className={cn("h-5 w-5", isActive ? "stroke-[2.5px]" : "stroke-2")} />
+                <item.icon className={cn("h-5 w-5 transition-transform duration-300 group-hover:scale-110", isActive ? "stroke-[2.5px]" : "stroke-2")} />
                 {item.label}
               </Link>
             );
           })}
 
-          <div className="h-px bg-gray-100 mx-4 my-6" />
+          <div className="h-px bg-border/50 mx-4 my-6" />
 
           {user && (
             <Link
               href={`/profile/${user.id}`}
               className={cn(
-                "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-bold transition-all group",
+                "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-medium transition-all group",
                 pathname.includes("/profile") && !pathname.includes("/edit")
-                  ? "text-primary"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
+                  ? "text-primary font-bold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
               )}
             >
               {pathname.includes("/profile") && !pathname.includes("/edit") && (
                 <motion.div
                   layoutId="activeNav"
-                  className="absolute inset-0 bg-primary/10 rounded-2xl -z-10"
+                  className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-2xl -z-10 border border-primary/20"
                 />
               )}
-              <User className="h-5 w-5" />
+              <User className={cn("h-5 w-5 transition-transform duration-300 group-hover:scale-110", pathname.includes("/profile") && !pathname.includes("/edit") ? "stroke-[2.5px]" : "stroke-2")} />
               My Space
             </Link>
           )}
@@ -120,19 +120,19 @@ export default function Sidebar() {
             <Link
               href="/moderation"
               className={cn(
-                "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-bold transition-all group",
+                "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-medium transition-all group",
                 pathname === "/moderation"
-                  ? "text-primary"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-white/50"
+                  ? "text-primary font-bold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
               )}
             >
               {pathname === "/moderation" && (
                 <motion.div
                   layoutId="activeNav"
-                  className="absolute inset-0 bg-primary/10 rounded-2xl -z-10"
+                  className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-2xl -z-10 border border-primary/20"
                 />
               )}
-              <Shield className="h-5 w-5" />
+              <Shield className={cn("h-5 w-5 transition-transform duration-300 group-hover:scale-110", pathname === "/moderation" ? "stroke-[2.5px]" : "stroke-2")} />
               Admin Hub
             </Link>
           )}
@@ -141,34 +141,34 @@ export default function Sidebar() {
         {/* User Profile Footer */}
         {user && (
           <div className="p-4 mt-auto">
-            <div className="bg-white/40 p-3 rounded-[1.5rem] border border-white/40">
+            <div className="glass-card bg-black/5 dark:bg-white/5 p-2 rounded-2xl border-white/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-3 w-full p-1.5 rounded-xl hover:bg-white transition-all outline-none group">
-                    <UserAvatar src={user.avatar} name={user.name} size="sm" className="ring-2 ring-white" />
+                  <button className="flex items-center gap-3 w-full p-2 rounded-xl transition-all outline-none group">
+                    <UserAvatar src={user.avatar} name={user.name} size="sm" className="ring-2 ring-white/20 shadow-md" />
                     <div className="flex-1 min-w-0 text-left">
-                      <p className="text-sm font-bold truncate text-gray-900">
+                      <p className="text-sm font-bold text-foreground truncate">
                         {user.name}
                       </p>
                       <TierBadge tier={user.tier} size="xs" />
                     </div>
-                    <ChevronUp className="h-4 w-4 text-gray-400 group-hover:text-gray-900 transition-colors" />
+                    <ChevronUp className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   side="top"
                   align="center"
-                  className="w-[220px] glass-card rounded-2xl mb-2"
+                  className="w-[220px] glass-card rounded-2xl mb-2 border-white/20 dark:border-white/10 shadow-xl"
                 >
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-primary/10 focus:text-primary py-2.5 font-bold">
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-primary/10 focus:text-primary py-2.5 font-bold cursor-pointer transition-colors">
                     <Link href="/profile/edit" className="flex items-center gap-2">
                       <Settings className="h-4 w-4" />
                       Settings
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-gray-100" />
+                  <DropdownMenuSeparator className="bg-border/50 my-1" />
                   <DropdownMenuItem
-                    className="rounded-xl text-red-500 focus:bg-red-50 focus:text-red-600 py-2.5 font-bold cursor-pointer"
+                    className="rounded-xl text-red-500 focus:bg-red-500/10 focus:text-red-500 py-2.5 font-bold cursor-pointer transition-colors"
                     onClick={() => signOut({ callbackUrl: "/login" })}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
@@ -182,36 +182,42 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-4 left-4 right-4 h-16 glass-card rounded-[1.25rem] z-50 flex items-center justify-around px-2 shadow-2xl">
-        {navItems.slice(0, 5).map((item) => {
-          const isActive = pathname.startsWith(item.href);
-          return (
+      <div className="lg:hidden fixed bottom-6 inset-x-0 z-50 flex items-center justify-center pointer-events-none pb-env(safe-area-inset-bottom)">
+        <nav className="glass-card bg-background/70 dark:bg-[#020617]/70 backdrop-blur-3xl px-6 py-3 rounded-full flex items-center gap-6 sm:gap-8 border-white/20 dark:border-white/10 shadow-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/5">
+          {navItems.slice(0, 5).map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group relative flex items-center justify-center transition-all duration-300"
+              >
+                <div className={cn("absolute inset-0 bg-primary/20 rounded-full blur-md transition-opacity duration-300", isActive ? "opacity-100" : "opacity-0")} />
+                <item.icon className={cn("h-6 w-6 relative z-10 transition-all duration-300", isActive ? "stroke-[2.5px] text-primary" : "stroke-2 text-muted-foreground")} />
+              </Link>
+            );
+          })}
+          {user && (
             <Link
-              key={item.href}
-              href={item.href}
+              href={`/profile/${user.id}`}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 min-w-[60px] h-full rounded-xl transition-all",
-                isActive ? "text-primary" : "text-gray-400"
+                "group relative flex flex-col items-center justify-center transition-all duration-300",
               )}
             >
-              <item.icon className={cn("h-6 w-6", isActive ? "stroke-[2.5px]" : "stroke-2")} />
-              <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
+              <div className={cn("absolute inset-0 bg-primary/20 rounded-full blur-md transition-opacity duration-300", pathname.includes("/profile") ? "opacity-100" : "opacity-0")} />
+              <UserAvatar 
+                src={user.avatar} 
+                name={user.name} 
+                size="xs" 
+                className={cn(
+                  "relative z-10 w-7 h-7 ring-2 transition-all duration-300 shadow-sm", 
+                  pathname.includes("/profile") ? "ring-primary" : "ring-transparent grayscale-[30%]"
+                )} 
+              />
             </Link>
-          );
-        })}
-        {user && (
-          <Link
-            href={`/profile/${user.id}`}
-            className={cn(
-              "flex flex-col items-center justify-center gap-1 min-w-[60px] h-full rounded-xl transition-all",
-              pathname.includes("/profile") ? "text-primary" : "text-gray-400"
-            )}
-          >
-            <UserAvatar src={user.avatar} name={user.name} size="xs" className={cn("ring-1 ring-offset-2", pathname.includes("/profile") ? "ring-primary" : "ring-transparent")} />
-            <span className="text-[9px] font-black uppercase tracking-widest">Me</span>
-          </Link>
-        )}
-      </nav>
+          )}
+        </nav>
+      </div>
     </>
   );
 }

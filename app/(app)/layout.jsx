@@ -5,18 +5,18 @@ import { Toaster } from "sonner";
 
 export default function AppLayout({ children }) {
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#020617] transition-colors duration-500">
+    <div className="relative min-h-[100dvh] w-full flex justify-center overflow-x-hidden">
       <Sidebar />
       
-      <main className="lg:ml-[280px] xl:mr-[340px] min-h-screen">
-        <div className="max-w-3xl mx-auto w-full pt-8 px-4 lg:px-8 pb-24 lg:pb-8">
+      <main className="flex-1 w-full lg:ml-[280px] xl:max-w-[calc(100%-600px)] min-h-[100dvh]">
+        <div className="max-w-3xl mx-auto w-full pt-8 px-4 sm:px-6 lg:px-10 pb-24 lg:pb-8">
           <PageTransition>
             {children}
           </PageTransition>
         </div>
       </main>
 
-      <div className="fixed right-0 top-0 bottom-0 overflow-y-auto hidden xl:block">
+      <div className="hidden xl:block w-[320px] shrink-0">
         <RightPanel />
       </div>
 
