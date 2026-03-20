@@ -56,6 +56,7 @@ export default function FeedPage() {
       const url = new URL("/api/posts", window.location.origin);
       if (filterType) url.searchParams.set("type", filterType);
       url.searchParams.set("page", nextPage.toString());
+      url.searchParams.set("limit", "3");
 
       const res = await fetch(url);
       const data = await res.json();
@@ -68,7 +69,7 @@ export default function FeedPage() {
         setPage(nextPage + 1);
       }
 
-      setHasMore((data.posts?.length || 0) === 20);
+      setHasMore((data.posts?.length || 0) === 3);
     } catch (error) {
       console.error("Failed to fetch posts:", error);
     } finally {

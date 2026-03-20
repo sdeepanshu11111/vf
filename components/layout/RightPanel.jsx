@@ -55,7 +55,7 @@ export default function RightPanel() {
   ];
 
   return (
-    <aside className="hidden xl:flex flex-col w-[320px] shrink-0 py-8 gap-6 sticky top-0 h-screen overflow-y-auto no-scrollbar pr-6">
+    <div className="flex flex-col w-full h-full py-8 gap-6 overflow-y-auto no-scrollbar pr-2">
       {/* Trending Topics */}
       <div className="bento-card group border-white/20 dark:border-white/5 shadow-xl shadow-primary/5">
         <div className="p-5">
@@ -164,6 +164,6 @@ export default function RightPanel() {
           </div>
         </div>
       )}
-    </aside>
+    </div>
   );
 }

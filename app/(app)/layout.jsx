@@ -5,10 +5,10 @@ import { Toaster } from "sonner";
 
 export default function AppLayout({ children }) {
   return (
-    <div className="relative min-h-[100dvh] w-full flex justify-center overflow-x-hidden">
+    <div className="relative min-h-[100dvh] w-full flex overflow-x-hidden">
       <Sidebar />
       
-      <main className="flex-1 w-full lg:ml-[280px] xl:max-w-[calc(100%-600px)] min-h-[100dvh]">
+      <main className="flex-1 w-full lg:ml-[290px] xl:mr-[350px] min-h-[100dvh]">
         <div className="max-w-3xl mx-auto w-full pt-8 px-4 sm:px-6 lg:px-10 pb-24 lg:pb-8">
           <PageTransition>
             {children}
@@ -16,9 +16,9 @@ export default function AppLayout({ children }) {
         </div>
       </main>
 
-      <div className="hidden xl:block w-[320px] shrink-0">
+      <aside className="hidden xl:flex fixed right-4 top-4 bottom-4 w-[320px] z-30">
         <RightPanel />
-      </div>
+      </aside>
 
       <Toaster position="top-right" expand={false} richColors closeButton />
     </div>
