@@ -10,6 +10,10 @@ import {
   X,
   Send,
   ShoppingCart,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner"; // Ensure sonner is installed as it's used in AppLayout
@@ -31,6 +35,8 @@ export default function ReelItem({ product, isActive }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [statusLoaded, setStatusLoaded] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Fetch initial status and comments when active or just mounted
   useEffect(() => {
@@ -79,11 +85,31 @@ export default function ReelItem({ product, isActive }) {
 
     if (isActive) {
       videoRef.current.play().catch((e) => console.log("Autoplay blocked:", e));
+      setIsPaused(false);
     } else {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
+      setIsPaused(false);
     }
   }, [isActive]);
+
+  const handleVideoTap = () => {
+    if (!videoRef.current) return;
+    if (isPaused) {
+      videoRef.current.play().catch(() => {});
+      setIsPaused(false);
+    } else {
+      videoRef.current.pause();
+      setIsPaused(true);
+    }
+  };
+
+  const handleMuteToggle = (e) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted((m) => !m);
+  };
 
   const handleLike = async () => {
     if (!user) return toast.error("Please login to like reels");
@@ -175,6 +201,7 @@ export default function ReelItem({ product, isActive }) {
     <div
       ref={containerRef}
       className="w-full h-full relative bg-gray-950 flex items-center justify-center overflow-hidden"
+      onClick={handleVideoTap}
     >
       {/* Media Layer */}
       {mediaUrl ? (
@@ -185,7 +212,7 @@ export default function ReelItem({ product, isActive }) {
             className="w-full h-full object-cover opacity-95"
             playsInline
             loop
-            muted
+            muted={isMuted}
             // We control play/pause via useEffect to ensure lazy load
           />
         ) : (
@@ -204,6 +231,23 @@ export default function ReelItem({ product, isActive }) {
 
       {/* Bottom Gradient for text readability */}
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+
+      {/* Pause overlay (shows briefly on tap) */}
+      {isPaused && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+          <div className="h-20 w-20 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+            <Pause className="h-9 w-9 text-white" />
+          </div>
+        </div>
+      )}
+
+      {/* Mute toggle — top left */}
+      <button
+        onClick={handleMuteToggle}
+        className="absolute top-12 left-4 z-30 h-10 w-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/15 flex items-center justify-center text-white hover:bg-black/70 transition-all active:scale-90"
+      >
+        {isMuted ? <VolumeX className="h-4.5 w-4.5 h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+      </button>
 
       {/* Overlay controls - Right side (TikTok style) */}
       <div className="absolute right-4 bottom-[100px] lg:bottom-12 flex flex-col items-center gap-6 z-10 pb-env(safe-area-inset-bottom)">
