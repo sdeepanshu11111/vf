@@ -17,6 +17,7 @@ import {
   ChevronUp,
   Bookmark,
   Clapperboard,
+  ShoppingBag,
 } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
@@ -32,6 +33,7 @@ import {
 const navItems = [
   { href: "/feed", icon: Home, label: "Home" },
   { href: "/explore", icon: Compass, label: "Founders" },
+  { href: "/products", icon: ShoppingBag, label: "Products" },
   { href: "/reels", icon: Clapperboard, label: "Insights" },
   { href: "/saved", icon: Bookmark, label: "Saved" },
   { href: "/notifications", icon: Bell, label: "Notifications", badge: true },
@@ -210,9 +212,9 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <div className="lg:hidden fixed bottom-6 inset-x-0 z-50 px-4 flex items-center justify-center pointer-events-none pb-env(safe-area-inset-bottom)">
-        <nav className="glass-card w-full max-w-md bg-background/80 dark:bg-[#020617]/80 backdrop-blur-3xl px-8 py-3.5 rounded-full flex items-center justify-between border-white/20 dark:border-white/10 shadow-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/5">
-          {navItems.filter((i) => ["Home", "Founders", "Insights", "Notifications"].includes(i.label)).map((item) => {
+      <div className="lg:hidden fixed bottom-6 inset-x-0 z-50 px-4 flex items-center justify-center pointer-events-none pb-[env(safe-area-inset-bottom)]">
+        <nav className="glass-card w-full max-w-md bg-background/80 dark:bg-[#020617]/80 backdrop-blur-3xl px-4 py-3.5 rounded-full flex items-center justify-between border-white/20 dark:border-white/10 shadow-2xl pointer-events-auto ring-1 ring-black/5 dark:ring-white/5">
+          {navItems.filter((i) => ["Home", "Founders", "Products", "Insights", "Notifications"].includes(i.label)).map((item) => {
             const isActive = pathname.startsWith(item.href);
             const showBadge = item.badge && unreadCount > 0;
             return (
