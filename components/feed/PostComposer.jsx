@@ -58,7 +58,7 @@ export default function PostComposer({ onPostCreated }) {
 
   if (!session) {
     return (
-      <div className="bg-white dark:bg-[#0f172a] mb-6 sm:mb-8 overflow-visible rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 relative z-10">
+      <div className="bg-white mb-4 sm:mb-5 overflow-visible rounded-3xl shadow-[0_24px_50px_-38px_rgba(15,23,42,0.5)] border border-slate-200/70 relative z-10">
         <div className="p-4 sm:p-6">
           <div className="flex items-start gap-4">
             <div className="h-10 w-10 rounded-full overflow-hidden opacity-90 shrink-0 ring-2 ring-gray-100">
@@ -67,18 +67,18 @@ export default function PostComposer({ onPostCreated }) {
             <div className="flex-1 min-w-0">
               <textarea
                 placeholder="Share a win, ask for help, or drop a sourcing tip..."
-                className="w-full resize-none border-0 bg-gray-50 rounded-2xl text-lg font-medium placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:ring-0 transition-all min-h-[60px] leading-relaxed pt-3 px-4 py-3"
+                className="w-full resize-none border-0 bg-slate-100/70 rounded-2xl text-base sm:text-lg font-medium placeholder:text-slate-500 text-slate-800 focus:outline-none focus:ring-0 transition-all min-h-[58px] leading-relaxed pt-3 px-4 py-3"
                 disabled
                 rows={1}
               />
-              <div className="mt-3 flex items-center gap-3">
+              <div className="mt-3 flex flex-wrap items-center gap-3">
                 <Button
                   onClick={() => requestAuth({ actionText: "share a post" })}
-                  className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6 h-11 font-black shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all active:scale-95"
+                  className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6 h-11 font-black shadow-lg shadow-primary/20 transition-all active:scale-95"
                 >
                   Log in / Create
                 </Button>
-                <p className="text-xs text-gray-500 font-bold">
+                <p className="text-xs text-slate-500 font-bold">
                   Browse freely. Sign in to post.
                 </p>
               </div>
@@ -90,17 +90,17 @@ export default function PostComposer({ onPostCreated }) {
   }
 
   return (
-    <div className="bg-white dark:bg-[#0f172a] mb-6 sm:mb-8 overflow-visible rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-white/5 relative z-10">
+    <div className="bg-white mb-4 sm:mb-5 overflow-visible rounded-3xl shadow-[0_24px_50px_-38px_rgba(15,23,42,0.5)] border border-slate-200/70 relative z-10">
       <div className="p-4 sm:p-6 transition-all">
         <div className="flex items-start gap-4">
-          <UserAvatar src={session.user.avatar} name={session.user.name} size="md" className="shrink-0 ring-4 ring-gray-50 dark:ring-white/5 shadow-sm mt-1" />
+          <UserAvatar src={session.user.avatar} name={session.user.name} size="md" className="shrink-0 ring-4 ring-slate-100 shadow-sm mt-1" />
           <div className="flex-1 min-w-0">
             <textarea
               placeholder="Share a win, ask for help, or drop a sourcing tip..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onFocus={() => setIsExpanded(true)}
-              className="w-full resize-none border-0 bg-transparent text-lg font-medium placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:ring-0 transition-all min-h-[50px] leading-relaxed pt-2"
+              className="w-full resize-none border-0 bg-transparent text-base sm:text-lg font-medium placeholder:text-slate-500 text-slate-800 focus:outline-none focus:ring-0 transition-all min-h-[50px] leading-relaxed pt-2"
               rows={isExpanded ? 3 : 1}
             />
 
@@ -112,7 +112,7 @@ export default function PostComposer({ onPostCreated }) {
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-2 pt-5 border-t border-gray-100 dark:border-white/5 space-y-5">
+                  <div className="mt-2 pt-5 border-t border-slate-100 space-y-5">
                     
                     {/* Tags Selection */}
                     <div className="flex flex-wrap gap-2">
@@ -124,7 +124,7 @@ export default function PostComposer({ onPostCreated }) {
                             onClick={() => setType(pt.value)}
                             className={cn(
                               "relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 overflow-hidden outline-none",
-                              isSelected ? "text-white shadow-md scale-[1.02]" : "text-muted-foreground bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-100 dark:border-transparent"
+                              isSelected ? "text-white shadow-md scale-[1.02]" : "text-slate-600 bg-slate-100/70 hover:bg-slate-100 border border-slate-200/70"
                             )}
                           >
                             {isSelected && (
@@ -145,13 +145,13 @@ export default function PostComposer({ onPostCreated }) {
                     {/* Inputs */}
                     <div className="flex flex-col sm:flex-row gap-3">
                       <div className="flex-1 relative group">
-                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                         <input
                           type="text"
                           placeholder="Tags (comma separated)"
                           value={tags}
                           onChange={(e) => setTags(e.target.value)}
-                          className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-transparent rounded-2xl pl-10 pr-4 py-3.5 text-sm font-medium focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all"
+                          className="w-full bg-slate-100/70 border border-slate-200/70 rounded-2xl pl-10 pr-4 py-3.5 text-sm font-medium focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all"
                         />
                       </div>
                       <button
@@ -160,7 +160,7 @@ export default function PostComposer({ onPostCreated }) {
                           "h-[52px] px-5 sm:w-[52px] sm:px-0 flex items-center justify-center rounded-2xl transition-all font-bold text-sm gap-2 border", 
                           showImageInput 
                             ? "bg-primary/10 text-primary border-primary/20 shadow-inner" 
-                            : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-transparent text-muted-foreground hover:text-foreground hover:bg-gray-100 dark:hover:bg-white/10"
+                            : "bg-slate-100/70 border-slate-200/70 text-slate-500 hover:text-slate-800 hover:bg-slate-100"
                         )}
                       >
                         <ImageIcon className="h-5 w-5" />
@@ -180,7 +180,7 @@ export default function PostComposer({ onPostCreated }) {
                             placeholder="Paste high-res image URL..."
                             value={imageUrl}
                             onChange={(e) => setImageUrl(e.target.value)}
-                            className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-transparent rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all mt-1"
+                            className="w-full bg-slate-100/70 border border-slate-200/70 rounded-2xl px-5 py-3.5 text-sm font-medium focus:outline-none focus:border-primary/30 focus:ring-4 focus:ring-primary/5 transition-all mt-1"
                           />
                         </motion.div>
                       )}
@@ -188,11 +188,11 @@ export default function PostComposer({ onPostCreated }) {
 
                     {/* Action Bar */}
                     <div className="flex items-center justify-between pt-3">
-                      <p className="hidden sm:block text-[11px] text-muted-foreground/60 font-bold uppercase tracking-wider">
-                        Press <kbd className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-md border border-gray-200 dark:border-white/10 font-bold mx-1 text-[10px] text-muted-foreground">Cmd + Enter</kbd> to post
+                      <p className="hidden sm:block text-[11px] text-slate-500 font-bold uppercase tracking-wider">
+                        Press <kbd className="bg-slate-100 px-2 py-1 rounded-md border border-slate-200 font-bold mx-1 text-[10px] text-slate-500">Cmd + Enter</kbd> to post
                       </p>
                       <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                        {error && <p className="text-xs text-red-500 font-bold bg-red-50/50 dark:bg-red-500/10 px-3 py-1.5 rounded-lg">{error}</p>}
+                        {error && <p className="text-xs text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-lg">{error}</p>}
                         <Button
                           onClick={handleSubmit}
                           disabled={!content.trim() || isSubmitting}

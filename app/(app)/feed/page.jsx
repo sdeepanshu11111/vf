@@ -15,7 +15,7 @@ const REEL_INJECT_EVERY = 3;
 
 function PostSkeleton() {
   return (
-    <div className="bg-white rounded-2xl p-5 space-y-3 shadow-sm border border-gray-100">
+    <div className="rounded-3xl border border-slate-200/70 bg-white p-5 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.35)] space-y-3">
       <div className="flex items-center gap-3">
         <Skeleton className="h-10 w-10 rounded-full" />
         <div className="space-y-2">
@@ -129,16 +129,20 @@ export default function FeedPage() {
   });
 
   return (
-    <div className="space-y-4">
-      <FeedStories />
+    <div className="space-y-4 sm:space-y-5 pb-6">
+      <section className="rounded-3xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/70 p-3 sm:p-4 shadow-[0_20px_50px_-35px_rgba(15,23,42,0.4)]">
+        <FeedStories />
+      </section>
 
       <PostComposer onPostCreated={() => fetchPosts(true)} />
 
-      <div className="sticky top-0 z-10 py-2">
-        <PostTypeFilter activeType={filterType} onTypeChange={setFilterType} />
+      <div className="sticky top-[70px] sm:top-2 z-20 py-1">
+        <div className="rounded-2xl bg-white/85 backdrop-blur supports-[backdrop-filter]:bg-white/70 shadow-[0_10px_30px_-22px_rgba(15,23,42,0.45)] border border-slate-200/70 p-1.5">
+          <PostTypeFilter activeType={filterType} onTypeChange={setFilterType} />
+        </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 sm:space-y-5">
         {loading ? (
           // Initial load skeletons
           <div className="space-y-4">
@@ -148,7 +152,7 @@ export default function FeedPage() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-sm"
+            className="text-center py-16 bg-white rounded-3xl border border-slate-200/70 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.35)]"
           >
             <p className="text-gray-500 font-bold text-lg">No posts yet</p>
             <p className="text-sm text-gray-400 mt-2">Be the first to share something!</p>

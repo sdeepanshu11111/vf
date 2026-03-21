@@ -14,8 +14,8 @@ import { motion } from "framer-motion";
 
 export default function PostTypeFilter({ activeType, onTypeChange }) {
   return (
-    <div className="flex items-center justify-start sm:justify-center w-full mb-6 relative z-10 pt-2">
-      <div className="flex gap-1 p-1 bg-white dark:bg-[#0f172a] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm overflow-x-auto hide-scrollbar w-max max-w-full">
+    <div className="flex items-center justify-start w-full relative z-10">
+      <div className="flex gap-1.5 p-1 bg-transparent rounded-2xl overflow-x-auto hide-scrollbar w-full max-w-full">
         {types.map((t) => {
           const isActive = activeType === t.value;
           return (
@@ -23,16 +23,16 @@ export default function PostTypeFilter({ activeType, onTypeChange }) {
               key={t.value || "all"}
               onClick={() => onTypeChange(t.value)}
               className={cn(
-                "relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 outline-none shrink-0",
+                "relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-[13px] sm:text-sm font-bold transition-all duration-300 outline-none shrink-0 whitespace-nowrap",
                 isActive 
-                  ? "text-primary dark:text-white" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-gray-50 dark:hover:bg-white/5"
+                  ? "text-primary bg-primary/10" 
+                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="feedTypeIndicator"
-                  className="absolute inset-0 bg-primary/10 dark:bg-white/10 rounded-xl"
+                  className="absolute inset-0 bg-primary/10 rounded-xl border border-primary/15"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
