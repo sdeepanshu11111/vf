@@ -11,6 +11,8 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { formatDistanceToNow } from "date-fns";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
+import { Button } from "@/components/ui/button";
 
 function getVideoUrl(product) {
   const vList = product.carousel?.videos || product.videos;
@@ -26,6 +28,7 @@ function getVideoUrl(product) {
 export default function FeedReelCard({ reel }) {
   const { data: session } = useSession();
   const user = session?.user;
+  const { requestAuth } = useAuthPrompt();
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -96,7 +99,10 @@ export default function FeedReelCard({ reel }) {
 
   const handleLike = async (e) => {
     e.stopPropagation();
-    if (!user) return toast.error("Please login to like");
+    if (!user) {
+      requestAuth({ actionText: "like this reel" });
+      return;
+    }
     setIsLiked((v) => !v);
     setLikeCount((v) => isLiked ? v - 1 : v + 1);
     try {
@@ -106,7 +112,10 @@ export default function FeedReelCard({ reel }) {
 
   const handleSave = async (e) => {
     e.stopPropagation();
-    if (!user) return toast.error("Please login to save");
+    if (!user) {
+      requestAuth({ actionText: "save this reel" });
+      return;
+    }
     setIsSaved((v) => !v);
     if (!isSaved) toast.success("Saved!");
     try {
@@ -126,7 +135,11 @@ export default function FeedReelCard({ reel }) {
 
   const submitComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || !user) return;
+    if (!newComment.trim()) return;
+    if (!user) {
+      requestAuth({ actionText: "comment on this reel" });
+      return;
+    }
     const text = newComment.trim();
     setNewComment("");
     try {
@@ -294,22 +307,37 @@ export default function FeedReelCard({ reel }) {
             )}
           </div>
 
-          <form onSubmit={submitComment} className="flex gap-2">
-            <input
-              type="text"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment..."
-              className="flex-1 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all"
-            />
-            <button
-              type="submit"
-              disabled={!newComment.trim()}
-              className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center disabled:opacity-40 hover:bg-primary/90 active:scale-95 transition-all"
-            >
-              <Send className="h-4 w-4 text-white -ml-0.5 mt-0.5" />
-            </button>
-          </form>
+          {user ? (
+            <form onSubmit={submitComment} className="flex gap-2">
+              <input
+                type="text"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Add a comment..."
+                className="flex-1 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all"
+              />
+              <button
+                type="submit"
+                disabled={!newComment.trim()}
+                className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center disabled:opacity-40 hover:bg-primary/90 active:scale-95 transition-all"
+              >
+                <Send className="h-4 w-4 text-white -ml-0.5 mt-0.5" />
+              </button>
+            </form>
+          ) : (
+            <div className="flex items-center gap-3">
+              <div className="flex-1 text-sm text-muted-foreground font-medium">
+                Sign in to comment.
+              </div>
+              <Button
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-white font-black"
+                onClick={() => requestAuth({ actionText: "comment on this reel" })}
+              >
+                Log in / Create
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

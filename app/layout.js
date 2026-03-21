@@ -3,6 +3,7 @@ import "./globals.css";
 import NextAuthProvider from "@/components/providers/NextAuthProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import IntercomInitializer from "@/components/intercom/IntercomInitializer";
+import AuthPromptProvider from "@/components/auth/AuthPromptProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +17,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <NextAuthProvider>
-          <TooltipProvider>
-            {children}
-            <IntercomInitializer />
-          </TooltipProvider>
+          <AuthPromptProvider>
+            <TooltipProvider>
+              {children}
+              <IntercomInitializer />
+            </TooltipProvider>
+          </AuthPromptProvider>
         </NextAuthProvider>
       </body>
     </html>

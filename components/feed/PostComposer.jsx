@@ -7,6 +7,7 @@ import { Send, Image as ImageIcon, Hash, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { cn } from "@/lib/utils";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 const postTypes = [
   { value: "tip", label: "Growth Tip", icon: Zap, color: "text-blue-500 bg-blue-50 border-blue-100" },
@@ -17,6 +18,7 @@ const postTypes = [
 
 export default function PostComposer({ onPostCreated }) {
   const { data: session } = useSession();
+  const { requestAuth } = useAuthPrompt();
   const [content, setContent] = useState("");
   const [type, setType] = useState("tip");
   const [tags, setTags] = useState("");
@@ -53,7 +55,38 @@ export default function PostComposer({ onPostCreated }) {
     finally { setIsSubmitting(false); }
   };
 
-  if (!session) return null;
+  if (!session) {
+    return (
+      <div className="bg-white dark:bg-[#0f172a] mb-6 sm:mb-8 overflow-visible rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 relative z-10">
+        <div className="p-4 sm:p-6">
+          <div className="flex items-start gap-4">
+            <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center font-black text-gray-400">
+              vF
+            </div>
+            <div className="flex-1 min-w-0">
+              <textarea
+                placeholder="Share a win, ask for help, or drop a sourcing tip..."
+                className="w-full resize-none border-0 bg-gray-50 rounded-2xl text-lg font-medium placeholder:text-muted-foreground/60 text-foreground focus:outline-none focus:ring-0 transition-all min-h-[60px] leading-relaxed pt-3 px-4 py-3"
+                disabled
+                rows={1}
+              />
+              <div className="mt-3 flex items-center gap-3">
+                <Button
+                  onClick={() => requestAuth({ actionText: "share a post" })}
+                  className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6 h-11 font-black shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all active:scale-95"
+                >
+                  Log in / Create
+                </Button>
+                <p className="text-xs text-gray-500 font-bold">
+                  Browse freely. Sign in to post.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-[#0f172a] mb-6 sm:mb-8 overflow-visible rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 dark:border-white/5 relative z-10">

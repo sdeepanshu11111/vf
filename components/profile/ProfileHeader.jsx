@@ -19,9 +19,11 @@ import TierBadge from "@/components/ui/TierBadge";
 import PointsBadge from "@/components/ui/PointsBadge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 export default function ProfileHeader({ user, isOwnProfile }) {
   const { data: session } = useSession();
+  const { requestAuth } = useAuthPrompt();
   const [isFollowing, setIsFollowing] = useState(user?.followers?.includes(session?.user?.id));
   const [followerCount, setFollowerCount] = useState(user?.followerCount || user?.followers?.length || 0);
   const [followLoading, setFollowLoading] = useState(false);
@@ -33,6 +35,10 @@ export default function ProfileHeader({ user, isOwnProfile }) {
 
   const handleFollow = async () => {
     if (followLoading) return;
+    if (!session?.user?.id) {
+      requestAuth({ actionText: "follow this founder" });
+      return;
+    }
     setFollowLoading(true);
     try {
       const res = await fetch(`/api/users/${user._id}/follow`, { method: "POST" });

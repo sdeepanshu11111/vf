@@ -13,14 +13,20 @@ import TierBadge from "@/components/ui/TierBadge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { UserPlus, UserMinus, Users } from "lucide-react";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 function UserCard({ person, sessionUserId, onFollowChange }) {
   const [isFollowing, setIsFollowing] = useState(person.isFollowing);
   const [loading, setLoading] = useState(false);
   const isOwnCard = person._id === sessionUserId;
+  const { requestAuth } = useAuthPrompt();
 
   const handleFollow = async () => {
     if (loading) return;
+    if (!sessionUserId) {
+      requestAuth({ actionText: "follow this founder" });
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`/api/users/${person._id}/follow`, { method: "POST" });

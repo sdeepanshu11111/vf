@@ -27,9 +27,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 export default function PostCard({ post, onUpdate }) {
   const { data: session } = useSession();
+  const { requestAuth } = useAuthPrompt();
   const [isExpanded, setIsExpanded] = useState(false);
   const [upvotes, setUpvotes] = useState(post.upvotes || []);
   const [isUpvoting, setIsUpvoting] = useState(false);
@@ -44,7 +46,11 @@ export default function PostCard({ post, onUpdate }) {
     : "";
 
   const handleUpvote = async () => {
-    if (!session || isUpvoting) return;
+    if (!session) {
+      requestAuth({ actionText: "upvote this post" });
+      return;
+    }
+    if (isUpvoting) return;
     const previousUpvotes = [...upvotes];
     if (upvotes.includes(session.user.id)) {
       setUpvotes(upvotes.filter((id) => id !== session.user.id));
@@ -62,7 +68,11 @@ export default function PostCard({ post, onUpdate }) {
   };
 
   const handleSave = async () => {
-    if (!session || isSaving) return;
+    if (!session) {
+      requestAuth({ actionText: "save this post" });
+      return;
+    }
+    if (isSaving) return;
     setIsSaving(true);
     try {
       const res = await fetch(`/api/posts/${post._id}/save`, { method: "POST" });

@@ -8,9 +8,11 @@ import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 function CommentCard({ comment, postId, onReplyAdded }) {
   const { data: session } = useSession();
+  const { requestAuth } = useAuthPrompt();
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [upvotes, setUpvotes] = useState(comment.upvotes || []);
@@ -19,7 +21,10 @@ function CommentCard({ comment, postId, onReplyAdded }) {
   const isUpvoted = upvotes.includes(session?.user?.id);
 
   const handleUpvote = async () => {
-    if (!session) return;
+    if (!session) {
+      requestAuth({ actionText: "upvote this comment" });
+      return;
+    }
     try {
       const res = await fetch(`/api/comments/${comment._id}/upvote`, {
         method: "POST",
@@ -39,6 +44,10 @@ function CommentCard({ comment, postId, onReplyAdded }) {
 
   const handleReply = async () => {
     if (!replyContent.trim() || submitting) return;
+    if (!session) {
+      requestAuth({ actionText: "reply to this thread" });
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await fetch(`/api/posts/${postId}/comments`, {
@@ -143,6 +152,7 @@ function CommentCard({ comment, postId, onReplyAdded }) {
 
 export default function CommentSection({ postId }) {
   const { data: session } = useSession();
+  const { requestAuth } = useAuthPrompt();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
@@ -166,6 +176,10 @@ export default function CommentSection({ postId }) {
 
   const handleSubmit = async () => {
     if (!newComment.trim() || submitting) return;
+    if (!session) {
+      requestAuth({ actionText: "comment on this post" });
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await fetch(`/api/posts/${postId}/comments`, {
@@ -186,7 +200,7 @@ export default function CommentSection({ postId }) {
   return (
     <div className="space-y-4">
       {/* Composer */}
-      {session && (
+      {session ? (
         <div className="flex gap-3">
           <UserAvatar
             src={session.user.avatar}
@@ -211,6 +225,20 @@ export default function CommentSection({ postId }) {
               Post
             </Button>
           </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-gray-100 bg-white/50 px-4 py-3">
+          <div>
+            <p className="text-sm font-bold text-gray-900">Join to comment</p>
+            <p className="text-xs text-gray-500">Sign in to reply, upvote, and share feedback.</p>
+          </div>
+          <Button
+            size="sm"
+            className="bg-primary hover:bg-primary/90 text-white rounded-xl font-black"
+            onClick={() => requestAuth({ actionText: "comment on this post" })}
+          >
+            Log in / Create
+          </Button>
         </div>
       )}
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heart, Play, Volume2, VolumeX, Clapperboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 // A single compact reel preview card for display in the feed
 function MiniReelCard({ reel, onLikeToggle }) {
@@ -16,6 +17,7 @@ function MiniReelCard({ reel, onLikeToggle }) {
     reel.star_rating > 0 ? Math.floor(reel.star_rating * 123) : 24
   );
   const { data: session } = useSession();
+  const { requestAuth } = useAuthPrompt();
 
   // Extract video URL
   const getVideoUrl = (product) => {
@@ -49,7 +51,10 @@ function MiniReelCard({ reel, onLikeToggle }) {
 
   const handleLike = async (e) => {
     e.stopPropagation();
-    if (!session) return;
+    if (!session) {
+      requestAuth({ actionText: "like this reel" });
+      return;
+    }
     setIsLiked((prev) => !prev);
     setLikeCount((prev) => isLiked ? prev - 1 : prev + 1);
     try {

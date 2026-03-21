@@ -23,6 +23,7 @@ function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteCode = searchParams.get("invite");
+  const callbackUrl = searchParams.get("callbackUrl");
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -111,7 +112,7 @@ function SignupContent() {
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push("/feed");
+        router.push(callbackUrl || "/feed");
       }
     } catch (err) {
       setError("Something went wrong");

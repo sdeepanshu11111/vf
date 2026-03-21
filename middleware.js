@@ -4,14 +4,30 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Public paths
-  const publicPaths = ["/login", "/signup", "/api/auth", "/api/invites", "/api/reels", "/reels"];
-  const isPublic = 
-    pathname.includes("/api/reels") || 
-    pathname.includes("/reels") || 
-    publicPaths.some((p) => pathname.startsWith(p));
+  // Public paths (anonymous browsing)
+  const isPublicPage =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/feed" ||
+    pathname === "/explore" ||
+    pathname === "/products" ||
+    pathname === "/reels" ||
+    pathname === "/members" ||
+    pathname.startsWith("/post/") ||
+    (pathname.startsWith("/profile/") && !pathname.startsWith("/profile/edit")) ||
+    // Public API reads (mutations still enforce auth in route handlers)
+    pathname.startsWith("/api/posts") ||
+    pathname.startsWith("/api/reels") ||
+    pathname.startsWith("/api/users") ||
+    pathname.startsWith("/api/search") ||
+    pathname.startsWith("/api/members") ||
+    pathname.startsWith("/api/comments");
 
-  if (isPublic) {
+  // NextAuth + invitations endpoints
+  const isAuthApi =
+    pathname.startsWith("/api/auth") || pathname.startsWith("/api/invites");
+
+  if (isPublicPage || isAuthApi) {
     return NextResponse.next();
   }
 

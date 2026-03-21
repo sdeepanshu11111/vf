@@ -9,9 +9,11 @@ import UserAvatar from "@/components/ui/UserAvatar";
 import PointsBadge from "@/components/ui/PointsBadge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 export default function RightPanel() {
   const { data: session } = useSession();
+  const { requestAuth } = useAuthPrompt();
   const [topUsers, setTopUsers] = useState([]);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
 
@@ -30,7 +32,10 @@ export default function RightPanel() {
   }, [session?.user?.id]);
 
   const handleFollow = async (userId) => {
-    if (!session?.user?.id) return;
+    if (!session?.user?.id) {
+      requestAuth({ actionText: "follow a founder" });
+      return;
+    }
     const prevUsers = [...suggestedUsers];
     setSuggestedUsers((prev) =>
       prev.map((user) => {

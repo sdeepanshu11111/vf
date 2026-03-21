@@ -18,10 +18,12 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner"; // Ensure sonner is installed as it's used in AppLayout
 import { useSession } from "next-auth/react";
+import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
 export default function ReelItem({ product, isActive }) {
   const { data: session } = useSession();
   const user = session?.user;
+  const { requestAuth } = useAuthPrompt();
   const containerRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -112,7 +114,10 @@ export default function ReelItem({ product, isActive }) {
   };
 
   const handleLike = async () => {
-    if (!user) return toast.error("Please login to like reels");
+    if (!user) {
+      requestAuth({ actionText: "like this reel" });
+      return;
+    }
     
     // Optimistic UI update
     const prevLiked = isLiked;
@@ -135,7 +140,10 @@ export default function ReelItem({ product, isActive }) {
   };
 
   const handleSave = async () => {
-    if (!user) return toast.error("Please login to save reels");
+    if (!user) {
+      requestAuth({ actionText: "save this reel" });
+      return;
+    }
 
     const prevSaved = isSaved;
     setIsSaved(!isSaved);
@@ -171,7 +179,7 @@ export default function ReelItem({ product, isActive }) {
   const submitComment = async (e) => {
     e.preventDefault();
     if (!newComment.trim() || !user) {
-      if (!user) toast.error("Please login to comment");
+      if (!user) requestAuth({ actionText: "comment on this reel" });
       return;
     }
 
