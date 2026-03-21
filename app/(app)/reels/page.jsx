@@ -11,8 +11,7 @@ export const metadata = {
 
 export default async function ReelsPage() {
   const db = await getDb();
-  
-  // Use a native MongoDB query for fast initial load
+
   const query = {
     $or: [
       { "carousel.videos": { $regex: "\\.mp4", $options: "i" } },
@@ -22,13 +21,27 @@ export default async function ReelsPage() {
     ]
   };
 
-  const totalDocs = await db.collection("products").countDocuments(query);
+  // Keep payload lean to improve first paint.
+  const projection = {
+    name: 1,
+    vfprodid: 1,
+    star_rating: 1,
+    stage: 1,
+    product_cost: 1,
+    primary_video: 1,
+    primary_gif: 1,
+    primary_image: 1,
+    video: 1,
+    videos: 1,
+    "carousel.videos": 1,
+    "product_features.pros": 1,
+  };
 
-  const productData = await db.collection("products")
-    .aggregate([
-      { $match: query },
-      { $sample: { size: 5 } }
-    ])
+  const productData = await db
+    .collection("products")
+    .find(query, { projection })
+    .sort({ _id: -1 })
+    .limit(5)
     .toArray();
 
   const initialReels = productData.map(p => ({
@@ -36,14 +49,12 @@ export default async function ReelsPage() {
     _id: p._id.toString()
   }));
 
-  // Initial render handles just 5 items for immediate UX paint
   return (
     <>
       <ReelsFeed 
         initialProducts={initialReels} 
         serverStats={{
           dbName: db.databaseName,
-          totalMatched: totalDocs,
           initialCount: initialReels.length
         }}
       />

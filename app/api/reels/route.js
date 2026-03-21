@@ -10,11 +10,9 @@ export async function GET(request) {
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "5", 10);
     const skip = (page - 1) * limit;
-    
-    console.log("Reels API Request:", { page, limit });
+
     const db = await getDb();
     if (!db) {
-      console.error("Database connection failed");
       return NextResponse.json({ success: false, error: "Database not available" }, { status: 500 });
     }
 
@@ -28,14 +26,27 @@ export async function GET(request) {
       ]
     };
 
-    const totalDocs = await db.collection("products").countDocuments(query);
-    console.log("Reels API Query Result:", { found: totalDocs });
+    const projection = {
+      name: 1,
+      vfprodid: 1,
+      star_rating: 1,
+      stage: 1,
+      product_cost: 1,
+      primary_video: 1,
+      primary_gif: 1,
+      primary_image: 1,
+      video: 1,
+      videos: 1,
+      "carousel.videos": 1,
+      "product_features.pros": 1,
+    };
 
-    const products = await db.collection("products")
-      .aggregate([
-        { $match: query },
-        { $sample: { size: limit } }
-      ])
+    const products = await db
+      .collection("products")
+      .find(query, { projection })
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit)
       .toArray();
 
     // Serialize ObjectId to pass down to Client Components
@@ -51,9 +62,7 @@ export async function GET(request) {
       limit,
       hasMore: products.length === limit,
       count: products.length,
-      totalMatched: totalDocs,
       dbName: db.databaseName,
-      timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error("Error fetching reels:", error);

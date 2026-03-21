@@ -36,34 +36,36 @@ export default function ReelItem({ product, isActive }) {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [commentsLoaded, setCommentsLoaded] = useState(false);
   const [statusLoaded, setStatusLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Fetch initial status and comments when active or just mounted
+  // Fetch status/comments lazily for active reel only.
   useEffect(() => {
-    if (!product._id) return;
+    if (!product._id || !isActive) return;
 
-    // Fetch comments
-    fetch(`/api/reels/${product._id}/comments`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) setComments(data.comments || []);
-      })
-      .catch(err => console.error(err));
+    if (!commentsLoaded) {
+      fetch(`/api/reels/${product._id}/comments`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) setComments(data.comments || []);
+          setCommentsLoaded(true);
+        })
+        .catch(() => setCommentsLoaded(true));
+    }
 
-    // Fetch user specific status
     if (user && !statusLoaded) {
       fetch(`/api/reels/${product._id}/status`)
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           setIsLiked(data.isLiked);
           setIsSaved(data.isSaved);
           setStatusLoaded(true);
         })
-        .catch(err => console.error(err));
+        .catch(() => setStatusLoaded(true));
     }
-  }, [product._id, user, statusLoaded]);
+  }, [product._id, user, statusLoaded, isActive, commentsLoaded]);
 
   // Robustly extract video URL from productData schema variations
   let videoUrl = null;

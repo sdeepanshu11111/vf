@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ReelItem from "./ReelItem";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-export default function ReelsFeed({ initialProducts, serverStats }) {
+export default function ReelsFeed({ initialProducts }) {
   const containerRef = useRef(null);
   const observerRef = useRef(null); // Sentinel
   
@@ -16,16 +17,14 @@ export default function ReelsFeed({ initialProducts, serverStats }) {
   const [hasMore, setHasMore] = useState((initialProducts?.length || 0) >= 5);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [debugInfo, setDebugInfo] = useState(serverStats || null);
-  const [showDebug, setShowDebug] = useState(false);
-
   // Observer to track which reel is active in viewport
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.target.dataset.index !== undefined) {
-            setActiveIndex(Number(entry.target.dataset.index));
+            const next = Number(entry.target.dataset.index);
+            setActiveIndex((prev) => (prev === next ? prev : next));
           }
         });
       },
@@ -47,16 +46,14 @@ export default function ReelsFeed({ initialProducts, serverStats }) {
     
     try {
       setIsLoading(true);
-      const url = `/api/reels?page=${page}&limit=5&_t=${Date.now()}`;
+      const url = `/api/reels?page=${page}&limit=5`;
       const res = await fetch(url);
       
       if (!res.ok) {
-        setDebugInfo({ status: res.status, url, error: "HTTP Error" });
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       
       const json = await res.json();
-      setDebugInfo({ ...json, url, lastFetch: new Date().toLocaleTimeString() });
       
       if (json.success) {
         setProducts(prev => [...prev, ...json.data]);
@@ -101,25 +98,17 @@ export default function ReelsFeed({ initialProducts, serverStats }) {
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
       
-      {showDebug && debugInfo && (
-        <div className="fixed top-4 left-4 z-[100] bg-black/80 text-white p-3 rounded-lg text-[10px] font-mono border border-white/20 max-w-[200px] pointer-events-none">
-          <div className="font-bold border-bottom mb-1 uppercase">Reels API Debug</div>
-          <div>DB: {debugInfo.dbName || "Unknown"}</div>
-          <div>Total Found: {debugInfo.totalMatched ?? "N/A"}</div>
-          <div>Received: {debugInfo.count ?? 0}</div>
-          <div>HasMore: {String(debugInfo.hasMore)}</div>
-          <div>Status: {debugInfo.status || 200}</div>
-          <div className="mt-1 opacity-50 truncate">{debugInfo.url}</div>
-        </div>
-      )}
-
       {products.map((product, index) => (
         <div 
           key={`${product.vfprodid}-${index}`} 
           data-index={index}
           className="reel-item w-full h-full snap-start snap-always"
         >
-          <ReelItem product={product} isActive={activeIndex === index} />
+          {Math.abs(index - activeIndex) <= 2 ? (
+            <ReelItem product={product} isActive={activeIndex === index} />
+          ) : (
+            <div className="w-full h-full bg-black" />
+          )}
         </div>
       ))}
       
