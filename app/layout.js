@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NextAuthProvider from "@/components/providers/NextAuthProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import IntercomInitializer from "@/components/intercom/IntercomInitializer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +16,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <NextAuthProvider>
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider>
+            {children}
+            <IntercomInitializer />
+          </TooltipProvider>
         </NextAuthProvider>
       </body>
     </html>
