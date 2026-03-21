@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import VfRoundMark from "@/components/brand/VfRoundMark";
 
 const navItems = [
   { href: "/feed", icon: Home, label: "Home" },
@@ -73,14 +74,14 @@ export default function Sidebar() {
         {/* Logo */}
         <div className="p-8 pb-6">
           <Link href="/feed" className="flex items-center gap-3.5 group">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-300">
-              <span className="font-black text-white text-lg tracking-tighter">vF</span>
+            <div className="h-10 w-10 shadow-lg shadow-[#514de2]/30 group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-300 rounded-[30px] overflow-hidden">
+              <VfRoundMark className="h-10 w-10" />
             </div>
             <div>
               <span className="font-bold text-lg tracking-tight text-foreground block leading-none">
                 vF Community
               </span>
-              <span className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1.5 block opacity-90">
+              <span className="text-[10px] font-bold text-[#514de2] uppercase tracking-widest mt-1.5 block opacity-90">
                 The Inner Circle
               </span>
             </div>

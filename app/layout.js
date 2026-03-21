@@ -10,6 +10,12 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "vF Community — Social Network for D2C Founders",
   description: "Built for Hustlers by vFulfill",
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    shortcut: "/favicon.png",
+    apple: "/apple-touch-icon.png",
+  },
+  themeColor: "#514de2",
 };
 
 export default function RootLayout({ children }) {

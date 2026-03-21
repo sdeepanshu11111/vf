@@ -8,6 +8,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import VfRoundMark from "@/components/brand/VfRoundMark";
 
 function LoginContent() {
   const router = useRouter();
@@ -47,14 +48,17 @@ function LoginContent() {
       <div className="hidden lg:flex flex-1 bg-[#111111] flex-col justify-between p-12">
         <div>
           <div className="flex items-center gap-3 mb-16">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center font-bold text-lg text-white">
-              vF
+            <div className="h-12 w-12 rounded-full overflow-hidden shadow-lg shadow-[#514de2]/40 shrink-0">
+              <VfRoundMark className="h-12 w-12" />
             </div>
             <div>
               <h1 className="text-white text-2xl font-bold tracking-tight">
                 vF Community
               </h1>
-              <p className="text-gray-400 text-sm">by vFulfill</p>
+              <p className="text-[#514de2] text-xs font-bold uppercase tracking-widest mt-1">
+                The Inner Circle
+              </p>
+              <p className="text-gray-400 text-sm mt-1">by vFulfill</p>
             </div>
           </div>
 
@@ -99,10 +103,15 @@ function LoginContent() {
         <div className="w-full max-w-sm">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center font-bold text-white">
-              vF
+            <div className="h-10 w-10 rounded-full overflow-hidden shadow-md shadow-[#514de2]/30 shrink-0">
+              <VfRoundMark className="h-10 w-10" />
             </div>
-            <span className="text-xl font-bold">vF Community</span>
+            <div className="text-left">
+              <span className="text-xl font-bold block">vF Community</span>
+              <span className="text-[10px] font-bold text-[#514de2] uppercase tracking-widest">
+                The Inner Circle
+              </span>
+            </div>
           </div>
 
           <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>

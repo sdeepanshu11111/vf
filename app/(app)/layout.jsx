@@ -4,6 +4,7 @@ import PageTransition from "@/components/layout/PageTransition";
 import { Toaster } from "sonner";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sparkles } from "lucide-react";
+import VfRoundMark from "@/components/brand/VfRoundMark";
 
 export default function AppLayout({ children }) {
   return (
@@ -14,10 +15,17 @@ export default function AppLayout({ children }) {
         {/* Mobile Header for RightPanel (Insights) */}
         <div className="xl:hidden sticky top-0 z-40 bg-background/80 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 py-3 px-4 sm:px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md">
-              <span className="font-black text-white text-sm tracking-tighter">vF</span>
+            <div className="h-8 w-8 rounded-full overflow-hidden shadow-md shadow-[#514de2]/25 shrink-0">
+              <VfRoundMark className="h-8 w-8" />
             </div>
-            <span className="font-bold text-foreground tracking-tight">Community</span>
+            <div className="leading-tight">
+              <span className="font-bold text-foreground tracking-tight block text-sm">
+                vF Community
+              </span>
+              <span className="text-[9px] font-bold text-[#514de2] uppercase tracking-wider">
+                Inner Circle
+              </span>
+            </div>
           </div>
           
           <Sheet>

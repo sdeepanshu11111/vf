@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { cn } from "@/lib/utils";
 import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
+import VfRoundMark from "@/components/brand/VfRoundMark";
 
 const postTypes = [
   { value: "tip", label: "Growth Tip", icon: Zap, color: "text-blue-500 bg-blue-50 border-blue-100" },
@@ -60,8 +61,8 @@ export default function PostComposer({ onPostCreated }) {
       <div className="bg-white dark:bg-[#0f172a] mb-6 sm:mb-8 overflow-visible rounded-2xl sm:rounded-3xl shadow-sm border border-gray-100 relative z-10">
         <div className="p-4 sm:p-6">
           <div className="flex items-start gap-4">
-            <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center font-black text-gray-400">
-              vF
+            <div className="h-10 w-10 rounded-full overflow-hidden opacity-90 shrink-0 ring-2 ring-gray-100">
+              <VfRoundMark className="h-10 w-10" />
             </div>
             <div className="flex-1 min-w-0">
               <textarea

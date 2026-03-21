@@ -8,6 +8,7 @@ import { ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import UserAvatar from "@/components/ui/UserAvatar";
+import VfRoundMark from "@/components/brand/VfRoundMark";
 
 const niches = [
   "Fashion",
@@ -144,10 +145,15 @@ function SignupContent() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center font-bold text-white">
-            vF
+          <div className="h-10 w-10 rounded-full overflow-hidden shadow-md shadow-[#514de2]/30 shrink-0">
+            <VfRoundMark className="h-10 w-10" />
           </div>
-          <span className="text-xl font-bold text-gray-900">vF Community</span>
+          <div className="text-left">
+            <span className="text-xl font-bold text-gray-900 block">vF Community</span>
+            <span className="text-[10px] font-bold text-[#514de2] uppercase tracking-widest">
+              The Inner Circle
+            </span>
+          </div>
         </div>
 
         {/* Progress */}
