@@ -1,17 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
 import Podium from "@/components/members/Podium";
 import LeaderboardTable from "@/components/members/LeaderboardTable";
-import MemberCard from "@/components/members/MemberCard";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export default function MembersPage() {
-  const { data: session } = useSession();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -37,43 +32,16 @@ export default function MembersPage() {
     return () => clearTimeout(timer);
   }, [fetchMembers]);
 
-  const handleFollow = async (memberId) => {
-    try {
-      const res = await fetch(`/api/users/${memberId}/follow`, {
-        method: "POST",
-      });
-      if (!res.ok) return;
-
-      const data = await res.json();
-      setMembers((prev) =>
-        prev.map((member) => {
-          if (member._id !== memberId) return member;
-
-          const followers = new Set(member.followers || []);
-          if (data.following) {
-            followers.add(session?.user?.id);
-          } else {
-            followers.delete(session?.user?.id);
-          }
-
-          return { ...member, followers: Array.from(followers) };
-        }),
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const top3 = members.slice(0, 3);
 
   return (
     <div className="space-y-8 pb-12">
       <div>
         <h2 className="text-2xl font-bold text-gray-900">
-          Community Directory
+          Leaderboard
         </h2>
         <p className="text-gray-500 text-sm mt-1">
-          Founders, hustlers, and visionaries
+          Top community members, founders and visionaries
         </p>
       </div>
 
@@ -83,50 +51,28 @@ export default function MembersPage() {
           placeholder="Search by name, niche or city..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 h-11 rounded-xl"
+          className="pl-10 h-11 rounded-xl bg-white shadow-sm border-gray-200 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
         />
       </div>
 
-      <Tabs defaultValue="directory" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 rounded-xl h-11">
-          <TabsTrigger value="directory" className="rounded-lg">
-            Directory
-          </TabsTrigger>
-          <TabsTrigger value="leaderboard" className="rounded-lg">
-            Leaderboard
-          </TabsTrigger>
-        </TabsList>
+      <div className="mt-6 flex flex-col gap-6">
+        {!search && !loading && members.length > 0 && <Podium users={top3} />}
+        {!loading && members.length > 0 && <LeaderboardTable members={members} />}
+        
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+            <div className="w-8 h-8 border-4 border-gray-200 border-t-primary rounded-full animate-spin mb-4"></div>
+            <p>Loading members...</p>
+          </div>
+        )}
 
-        <TabsContent value="directory" className="mt-6">
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Skeleton key={i} className="h-48 rounded-2xl" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {members.map((member) => (
-                <MemberCard
-                  key={member._id}
-                  member={member}
-                  onFollow={session?.user?.id !== member._id ? handleFollow : undefined}
-                  followLabel={
-                    member.followers?.includes(session?.user?.id)
-                      ? "Following"
-                      : "Follow"
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="leaderboard" className="mt-6">
-          {!search && <Podium users={top3} />}
-          <LeaderboardTable members={members} />
-        </TabsContent>
-      </Tabs>
+        {!loading && members.length === 0 && (
+          <div className="text-center py-20 text-gray-500">
+            <p className="text-lg font-medium">No members found</p>
+            <p className="text-sm mt-1">Try a different search query</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
