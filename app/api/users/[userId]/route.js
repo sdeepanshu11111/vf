@@ -57,7 +57,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, bio, city, niche } = await request.json();
+    const { name, bio, city, niche, avatar } = await request.json();
     const db = await getDb();
 
     const updateData = {};
@@ -66,8 +66,10 @@ export async function PATCH(request, { params }) {
     if (city !== undefined) updateData.city = city;
     if (niche !== undefined) updateData.niche = niche;
 
-    // Update avatar if name changes
-    if (name) {
+    // Use custom avatar if provided, otherwise auto-generate from name
+    if (avatar && avatar.trim()) {
+      updateData.avatar = avatar.trim();
+    } else if (name) {
       updateData.avatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
     }
 
