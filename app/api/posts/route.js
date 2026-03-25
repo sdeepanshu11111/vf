@@ -54,6 +54,8 @@ export async function GET(request) {
           type: 1,
           content: 1,
           images: 1,
+          video: 1,
+          poll: 1,
           tags: 1,
           upvotes: 1,
           commentCount: 1,
@@ -96,7 +98,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { type, content, tags, images } = body;
+    const { type, content, tags, images, video, poll } = body;
     if (!type || !["win", "tip", "question", "sourcing"].includes(type)) {
       return NextResponse.json(
         { error: "Valid post type required (win, tip, question, sourcing)" },
@@ -118,6 +120,8 @@ export async function POST(request) {
       type,
       content: content.trim(),
       images: images || [],
+      video: video || null,
+      poll: poll || null,
       tags: tags || [],
       upvotes: [],
       commentCount: 0,

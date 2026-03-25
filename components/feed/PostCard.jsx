@@ -38,6 +38,8 @@ export default function PostCard({ post, onUpdate }) {
   const [isSaving, setIsSaving] = useState(false);
   const [isReposting, setIsReposting] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [poll, setPoll] = useState(post.poll || null);
+  const [isVoting, setIsVoting] = useState(false);
 
   const author = post.author || {};
   const isUpvoted = upvotes.includes(session?.user?.id);
@@ -79,6 +81,30 @@ export default function PostCard({ post, onUpdate }) {
       if (res.ok) setSaved(!saved);
     } catch (e) { console.error(e); }
     setIsSaving(false);
+  };
+
+  const handleVote = async (optionIndex) => {
+    if (!session) {
+      requestAuth({ actionText: "vote on this poll" });
+      return;
+    }
+    if (isVoting) return;
+    setIsVoting(true);
+    try {
+      const res = await fetch(`/api/posts/${post._id}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optionIndex })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPoll(data.poll);
+      } else {
+        const data = await res.json();
+        if(data.error) toast.error(data.error);
+      }
+    } catch (e) { console.error(e); }
+    setIsVoting(false);
   };
 
   const contentPreview = post.content?.length > 280 && !isExpanded;
@@ -152,9 +178,82 @@ export default function PostCard({ post, onUpdate }) {
 
         {/* Media */}
         {post.images?.length > 0 && (
-          <div className="mt-4 sm:mt-5 overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/60 relative group/media shadow-sm">
-            <img loading="lazy" src={post.images[0]} alt="Post" className="w-full object-cover max-h-[500px] transform group-hover/media:scale-105 transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover/media:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className={cn(
+            "mt-4 sm:mt-5 rounded-2xl sm:rounded-3xl border border-slate-200/60 relative group/media shadow-sm overflow-hidden",
+            post.images.length > 1 ? "grid grid-cols-2 gap-1 bg-slate-100" : ""
+          )}>
+            {post.images.slice(0, 4).map((img, idx) => (
+              <div key={idx} className={cn("relative overflow-hidden", post.images.length === 3 && idx === 0 ? "col-span-2" : "")}>
+                <img loading="lazy" src={img} alt="Post" className="w-full h-full object-cover max-h-[500px] min-h-[200px] transform group-hover/media:scale-105 transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)]" />
+                {idx === 3 && post.images.length > 4 && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-2xl backdrop-blur-sm">
+                    +{post.images.length - 4}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Video */}
+        {post.video && (
+          <div className="mt-4 sm:mt-5 overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm bg-black relative">
+            <video src={post.video} controls className="w-full max-h-[500px] object-contain" />
+          </div>
+        )}
+
+        {/* Poll */}
+        {poll && poll.options && poll.options.length > 0 && (
+          <div className="mt-4 sm:mt-5 bg-[#F8FAFC] border border-slate-200/60 rounded-2xl p-4 sm:p-5 space-y-3 shadow-sm" onClick={(e) => e.stopPropagation()}>
+            {(() => {
+              const totalVotes = poll.options.reduce((sum, opt) => sum + (opt.votes?.length || 0), 0);
+              const hasVoted = session && poll.options.some(opt => opt.votes?.includes(session.user.id));
+              
+              return (
+                <>
+                  {poll.options.map((opt, i) => {
+                    const votes = opt.votes?.length || 0;
+                    const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+                    const isMyVote = session && opt.votes?.includes(session.user.id);
+
+                    if (hasVoted) {
+                      return (
+                        <div key={i} className="relative overflow-hidden rounded-xl bg-white border border-slate-200">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${percentage}%` }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className={cn("absolute inset-y-0 left-0 opacity-20", isMyVote ? "bg-blue-500" : "bg-slate-300")}
+                          />
+                          <div className="relative flex items-center justify-between p-3.5 text-[14px] font-semibold text-slate-700 z-10">
+                            <span className="flex items-center gap-2">
+                              {opt.text}
+                              {isMyVote && <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full uppercase tracking-wider">Your Vote</span>}
+                            </span>
+                            <span>{percentage}%</span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={i}
+                        onClick={(e) => { e.preventDefault(); handleVote(i); }}
+                        disabled={isVoting}
+                        className="w-full text-left p-3.5 rounded-xl border border-blue-200/60 bg-white hover:bg-blue-50/50 hover:border-blue-300 text-slate-700 text-[14px] font-semibold transition-all active:scale-[0.98] group flex items-center justify-between"
+                      >
+                         <span>{opt.text}</span>
+                         <span className="w-4 h-4 rounded-full border border-slate-300 group-hover:border-blue-400 group-hover:bg-blue-50 transition-colors" />
+                      </button>
+                    );
+                  })}
+                  <div className="text-[11px] font-bold text-slate-500 pt-1 px-1 uppercase tracking-wider">
+                    {totalVotes} vote{totalVotes !== 1 ? 's' : ''}
+                  </div>
+                </>
+              );
+            })()}
           </div>
         )}
 
