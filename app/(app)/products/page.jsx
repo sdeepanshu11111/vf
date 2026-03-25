@@ -11,50 +11,53 @@ export default function ProductsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  
+
   const observerRef = useRef(null);
   const sentinelRef = useRef(null);
 
-  const fetchProducts = useCallback(async (reset = false, currentPage = null) => {
-    const targetPage = reset ? 1 : (currentPage || page);
-    
-    if (reset) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
-
-    try {
-      const url = new URL("/api/reels", window.location.origin);
-      url.searchParams.set("page", targetPage.toString());
-      url.searchParams.set("limit", "12");
-
-      const res = await fetch(url.toString());
-      const data = await res.json();
-      
-      const newProducts = data.data || [];
+  const fetchProducts = useCallback(
+    async (reset = false, currentPage = null) => {
+      const targetPage = reset ? 1 : currentPage || page;
 
       if (reset) {
-        setProducts(newProducts);
-        setPage(2);
+        setLoading(true);
       } else {
-        setProducts((prev) => [...prev, ...newProducts]);
-        setPage(targetPage + 1);
+        setLoadingMore(true);
       }
 
-      setHasMore(newProducts.length === 12);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, [page]);
+      try {
+        const url = new URL("/api/reels", window.location.origin);
+        url.searchParams.set("page", targetPage.toString());
+        url.searchParams.set("limit", "12");
+
+        const res = await fetch(url.toString());
+        const data = await res.json();
+
+        const newProducts = data.data || [];
+
+        if (reset) {
+          setProducts(newProducts);
+          setPage(2);
+        } else {
+          setProducts((prev) => [...prev, ...newProducts]);
+          setPage(targetPage + 1);
+        }
+
+        setHasMore(newProducts.length === 12);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [page],
+  );
 
   // Initial Fetch
   useEffect(() => {
     fetchProducts(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Infinite Scroll Observer
@@ -70,7 +73,7 @@ export default function ProductsPage() {
           });
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sentinelRef.current) {
@@ -92,28 +95,27 @@ export default function ProductsPage() {
           Winning Products
         </h1>
         <p className="text-muted-foreground mt-4 text-sm sm:text-base font-medium max-w-2xl leading-relaxed">
-          Exclusive access to high-margin dropship products. Sourced, verified, and heavily analyzed by our experts for optimal scaling.
+          Exclusive access to high-margin dropship products. Sourced, verified,
+          and heavily analyzed by our experts for optimal scaling.
         </p>
-        
-        <div className="flex items-center gap-4 mt-6">
-           <button className="bg-foreground hover:bg-foreground/90 text-background flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm shadow-xl active:scale-95 transition-all">
-             <ArrowDownToLine className="h-4 w-4" />
-             Export Catalog
-           </button>
-        </div>
       </div>
 
       {loading ? (
         // Loading Grid Skeletons
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="animate-pulse bg-black/5 dark:bg-white/5 rounded-[2rem] h-[600px] w-full" />
+            <div
+              key={i}
+              className="animate-pulse bg-black/5 dark:bg-white/5 rounded-[2rem] h-[600px] w-full"
+            />
           ))}
         </div>
       ) : products.length === 0 ? (
         <div className="text-center py-24 bg-white dark:bg-black/20 rounded-[2rem] border border-gray-100 dark:border-white/5">
-           <p className="text-gray-500 font-bold text-lg">No products found</p>
-           <p className="text-sm text-gray-400 mt-2">Come back later for high-margin drops!</p>
+          <p className="text-gray-500 font-bold text-lg">No products found</p>
+          <p className="text-sm text-gray-400 mt-2">
+            Come back later for high-margin drops!
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
