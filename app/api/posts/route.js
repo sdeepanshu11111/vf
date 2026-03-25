@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import { serializePost } from "@/lib/serializers";
+import { checkContentForModeration } from "@/lib/moderation";
 
 export const dynamic = "force-dynamic";
 
@@ -110,6 +111,18 @@ export async function POST(request) {
       return NextResponse.json(
         { error: "Content is required" },
         { status: 400 },
+      );
+    }
+
+    let textToModerate = content.trim();
+    if (poll?.options) {
+      textToModerate += " " + poll.options.map((o) => o.text).join(" ");
+    }
+    const moderation = await checkContentForModeration(textToModerate);
+    if (!moderation.isAppropriate) {
+      return NextResponse.json(
+        { error: moderation.reason || "Content violates community guidelines." },
+        { status: 400 }
       );
     }
 

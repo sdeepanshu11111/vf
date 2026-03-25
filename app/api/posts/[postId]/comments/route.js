@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
 import { serializeIds } from "@/lib/serializers";
+import { checkContentForModeration } from "@/lib/moderation";
 
 export const dynamic = "force-dynamic";
 
@@ -88,6 +89,14 @@ export async function POST(request, { params }) {
       return NextResponse.json(
         { error: "Content is required" },
         { status: 400 },
+      );
+    }
+
+    const moderation = await checkContentForModeration(content.trim());
+    if (!moderation.isAppropriate) {
+      return NextResponse.json(
+        { error: moderation.reason || "Comment violates community guidelines." },
+        { status: 400 }
       );
     }
 
