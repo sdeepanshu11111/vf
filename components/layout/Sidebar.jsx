@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { pusherClient } from "@/lib/pusher-client";
+import { toast } from "sonner";
 import {
   Home,
   Compass,
@@ -48,7 +50,8 @@ export default function Sidebar() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!session) return;
+    if (!session?.user?.id) return;
+    
     const fetchUnread = async () => {
       try {
         const res = await fetch("/api/notifications");
@@ -57,9 +60,39 @@ export default function Sidebar() {
       } catch {}
     };
     fetchUnread();
-    const interval = setInterval(fetchUnread, 30000);
-    return () => clearInterval(interval);
-  }, [session]);
+    
+    // Polling fallback
+    const interval = setInterval(fetchUnread, 60000);
+    
+    // Pusher real-time updates
+    const channelName = `user-${session.user.id}`;
+    if (pusherClient) {
+      const channel = pusherClient.subscribe(channelName);
+      channel.bind("new-notification", (data) => {
+        // Exclude self-notifications if somehow triggered
+        if (data.actorId === session.user.id) return;
+        
+        setUnreadCount((prev) => prev + 1);
+        
+        let message = "You have a new notification";
+        if (data.type === "follow") message = "Someone started following you!";
+        if (data.type === "upvote") message = "Someone upvoted your post!";
+        if (data.type === "comment") message = "Someone commented on your post!";
+        if (data.type === "reply") message = "Someone replied to your comment!";
+        
+        toast(message, {
+          icon: <Bell className="h-4 w-4 text-primary" />,
+        });
+      });
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (pusherClient) {
+        pusherClient.unsubscribe(channelName);
+      }
+    };
+  }, [session?.user?.id]);
 
   useEffect(() => {
     if (pathname.startsWith("/notifications")) {

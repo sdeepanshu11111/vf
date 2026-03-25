@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/lib/auth";
 import { getDb } from "@/lib/mongodb";
+import { pusherServer } from "@/lib/pusher";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +72,16 @@ export async function POST(request, { params }) {
           read: false,
           createdAt: new Date(),
         });
+        // Real-time notification
+        try {
+          await pusherServer.trigger(`user-${post.authorId}`, "new-notification", {
+            type: "upvote",
+            actorId: userId,
+            postId: params.postId,
+          });
+        } catch (err) {
+          console.error("Pusher error:", err);
+        }
       }
       return NextResponse.json({
         upvoted: true,
