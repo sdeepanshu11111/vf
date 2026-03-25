@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, ChevronLeft, Check } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -35,6 +35,7 @@ function SignupContent() {
     email: "",
     password: "",
     confirmPassword: "",
+    avatar: "",
     bio: "",
     city: "",
     niche: "Fashion",
@@ -85,9 +86,8 @@ function SignupContent() {
 
     try {
       const endpoint = inviteCode ? `/api/invites/${inviteCode}` : "/api/auth/register";
-      const payload = inviteCode
-        ? { name: form.name, password: form.password }
-        : form;
+      // Send the entire form to ensure bio, city, niche, avatar, etc. are passed for invites too
+      const payload = form;
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -139,6 +139,10 @@ function SignupContent() {
     }
     return true;
   };
+
+  const generatedAvatar = form.name
+    ? `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(form.name)}`
+    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
@@ -259,7 +263,22 @@ function SignupContent() {
                 Set up your profile
               </h3>
               <div className="flex justify-center">
-                <UserAvatar name={form.name} size="2xl" />
+                <UserAvatar src={form.avatar || generatedAvatar} name={form.name} size="2xl" />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                  Profile Photo URL
+                </label>
+                <div className="relative">
+                  <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="url"
+                    placeholder="https://example.com/your-photo.jpg"
+                    value={form.avatar}
+                    onChange={(e) => update("avatar", e.target.value)}
+                    className="rounded-xl pl-9 h-11"
+                  />
+                </div>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1.5 block">
@@ -269,7 +288,7 @@ function SignupContent() {
                   placeholder="D2C founder passionate about..."
                   value={form.bio}
                   onChange={(e) => update("bio", e.target.value)}
-                  className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                  className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none border-gray-200"
                   rows={3}
                 />
               </div>

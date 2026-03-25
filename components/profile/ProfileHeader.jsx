@@ -13,19 +13,29 @@ import {
   Zap,
 } from "lucide-react";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
-import UserAvatar from "@/components/ui/UserAvatar";
-import TierBadge from "@/components/ui/TierBadge";
-import PointsBadge from "@/components/ui/PointsBadge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuthPrompt } from "@/components/auth/AuthPromptProvider";
 
+function StatCard({ label, value, icon }) {
+  return (
+    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] flex flex-col justify-between min-h-[120px] hover:border-blue-100 hover:shadow-md transition-all">
+       <div className="flex items-center gap-2">
+         <h3 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">{value}</h3>
+         {icon && icon}
+       </div>
+       <p className="text-[10px] sm:text-[11px] font-black text-gray-400 uppercase tracking-widest leading-[1.4] pr-4 mt-2">
+          {label}
+       </p>
+    </div>
+  );
+}
+
 export default function ProfileHeader({ user, isOwnProfile }) {
   const { data: session } = useSession();
   const { requestAuth } = useAuthPrompt();
-  const [isFollowing, setIsFollowing] = useState(user?.followers?.includes(session?.user?.id));
-  const [followerCount, setFollowerCount] = useState(user?.followerCount || user?.followers?.length || 0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
@@ -47,137 +57,133 @@ export default function ProfileHeader({ user, isOwnProfile }) {
         setIsFollowing(data.following);
         setFollowerCount((prev) => data.following ? prev + 1 : Math.max(prev - 1, 0));
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
     setFollowLoading(false);
   };
 
+  const avatarUrl = user?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user?.name || "User")}`;
+
   return (
-    <div className="bento-card overflow-hidden mb-8">
-      {/* Cover Area */}
-      <div className="relative h-48 sm:h-64 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-primary/40" />
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
-        
-        {/* Floating Profile Info (Desktop Only Overlay) */}
-        <div className="absolute bottom-6 right-6 hidden sm:flex gap-3">
-           {isOwnProfile ? (
-              <>
-                <Link href="/profile/edit">
-                  <Button className="glass-card bg-white/20 border-white/40 text-white font-bold rounded-2xl hover:bg-white/30 px-6 backdrop-blur-xl transition-all">
-                    <Edit3 className="h-4 w-4 mr-2" /> EDIT PROFILE
-                  </Button>
-                </Link>
-                <Button 
-                  onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="glass-card bg-red-500/20 border-red-500/40 text-white font-bold rounded-2xl hover:bg-red-500/40 px-6 backdrop-blur-xl transition-all"
-                >
-                  <LogOut className="h-4 w-4 mr-2" /> LOGOUT
-                </Button>
-              </>
-           ) : (
-              <>
-                <Button 
-                  onClick={handleFollow}
-                  disabled={followLoading}
-                  className={cn(
-                    "font-bold rounded-2xl px-6 transition-all shadow-xl",
-                    isFollowing 
-                      ? "glass-card bg-white/20 border-white/40 text-white hover:bg-white/30" 
-                      : "bg-white text-primary hover:bg-gray-100"
-                  )}
-                >
-                  {isFollowing ? <><UserMinus className="h-4 w-4 mr-2" /> UNFOLLOW</> : <><UserPlus className="h-4 w-4 mr-2" /> FOLLOW</>}
-                </Button>
-              </>
-           )}
+    <div className="mb-8">
+      {/* Cover Section */}
+      <div className="relative rounded-3xl overflow-visible bg-gradient-to-r from-blue-500 via-blue-500 to-[#5a7bc4] z-10 transition-all duration-300">
+        {/* Dotted Pattern Overlay */}
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_white_1.5px,_transparent_1px)] bg-[size:10px_10px] mix-blend-overlay rounded-3xl pointer-events-none"></div>
+
+        <div className="relative px-6 sm:px-10 pt-16 pb-8 flex flex-col sm:flex-row sm:items-end gap-6 sm:gap-8">
+          
+          {/* Avatar Area */}
+          <div className="relative shrink-0 sm:mb-[-60px] z-20">
+             <div className="bg-white p-1.5 sm:p-2 shadow-xl inline-block -rotate-1 hover:rotate-0 transition-transform duration-300 rounded-sm">
+                <img 
+                  src={avatarUrl} 
+                  alt={user?.name} 
+                  className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-sm" 
+                />
+             </div>
+             <div className="absolute -bottom-2 -right-2 h-7 w-7 sm:h-9 sm:w-9 bg-[#10b981] rounded-full border-[3px] border-white shadow-sm z-30" />
+          </div>
+
+          <div className="flex flex-col flex-1 pb-1">
+             {/* Name & Badges Row */}
+             <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-3">
+                   <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight uppercase drop-shadow-sm truncate max-w-[280px] sm:max-w-none">
+                     {user?.name}
+                   </h1>
+                   <span className="bg-white/95 text-blue-600 font-bold px-4 py-1.5 rounded-full text-xs sm:text-sm shadow-sm opacity-90 backdrop-blur-md">
+                     {user?.tier || 'Growth'}
+                   </span>
+                </div>
+                
+                {/* Actions */}
+                <div className="flex items-center gap-2 relative z-30">
+                   {isOwnProfile ? (
+                      <>
+                         <Link href="/profile/edit">
+                            <Button variant="outline" className="bg-white/20 hover:bg-white/30 border-white/40 text-white shadow-sm rounded-full backdrop-blur-md h-9 text-xs sm:text-sm font-bold px-5">
+                               <Edit3 className="h-3.5 w-3.5 mr-2" /> EDIT PROFILE
+                            </Button>
+                         </Link>
+                         <Button 
+                            onClick={() => signOut({ callbackUrl: "/login" })}
+                            variant="outline" 
+                            className="bg-[#6b5b8d]/70 hover:bg-[#6b5b8d]/90 border-transparent text-white shadow-sm rounded-full backdrop-blur-md h-9 text-xs sm:text-sm font-bold px-5"
+                         >
+                            <LogOut className="h-3.5 w-3.5 mr-2" /> LOGOUT
+                         </Button>
+                      </>
+                   ) : (
+                      <Button 
+                        onClick={handleFollow}
+                        disabled={followLoading}
+                        className={cn(
+                          "font-bold rounded-full h-9 text-xs sm:text-sm px-6 shadow-sm backdrop-blur-md border transition-all",
+                          isFollowing 
+                            ? "bg-white/20 border-white/40 text-gray-900 hover:bg-white/30" 
+                            : "bg-gray-900 text-white border-transparent hover:bg-gray-800"
+                        )}
+                      >
+                        {isFollowing ? <><UserMinus className="h-3.5 w-3.5 mr-2" /> UNFOLLOW</> : <><UserPlus className="h-3.5 w-3.5 mr-2" /> FOLLOW</>}
+                      </Button>
+                   )}
+                </div>
+             </div>
+
+             {/* Details Info Row */}
+             <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-4 opacity-90 text-[#1e3a8a] font-bold text-[10px] sm:text-xs tracking-widest">
+                {user?.niche && (
+                  <div className="flex items-center gap-1.5 uppercase">
+                    <Zap className="h-3.5 w-3.5" strokeWidth={3} /> {user.niche}
+                  </div>
+                )}
+                {user?.city && (
+                  <div className="flex items-center gap-1.5 uppercase">
+                    <MapPin className="h-3.5 w-3.5" strokeWidth={3} /> {user.city}
+                  </div>
+                )}
+                {user?.joinedAt && (
+                  <div className="flex items-center gap-1.5 uppercase">
+                    <Calendar className="h-3.5 w-3.5" strokeWidth={3} /> HUSTLING SINCE {format(new Date(user.joinedAt), "MMM yyyy").toUpperCase()}
+                  </div>
+                )}
+             </div>
+          </div>
         </div>
       </div>
 
-      <div className="px-6 sm:px-10 pb-10">
-        {/* Avatar & Basic Info */}
-        <div className="flex flex-col sm:flex-row sm:items-end gap-6 -mt-16 sm:-mt-20 relative z-10">
-          <div className="relative group">
-            <UserAvatar src={user?.avatar} name={user?.name} size="2xl" className="ring-8 ring-white shadow-2xl" />
-            <div className="absolute -bottom-1 -right-1 h-8 w-8 bg-green-500 rounded-full border-4 border-white shadow-lg" />
+      {/* Content Area Below Cover */}
+      <div className="relative mt-12 sm:mt-16 z-0 space-y-4">
+          
+          {/* Bio Box */}
+          <div className="bg-white/70 backdrop-blur-md rounded-3xl border border-gray-100 p-6 sm:p-8 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.02)] transition-all hover:bg-white">
+             <p className="text-gray-800 font-medium text-[15px] sm:text-lg leading-relaxed">
+               {user?.bio || "D2C founder."}
+             </p>
           </div>
 
-          <div className="flex-1 pb-2">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight uppercase">{user?.name}</h1>
-              <TierBadge tier={user?.tier} size="md" className="py-1.5 px-3" />
-            </div>
-            <div className="flex flex-wrap items-center gap-5 mt-3">
-              {user?.niche && (
-                <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-xl border border-primary/10">
-                   <Zap className="h-3.5 w-3.5 text-primary" />
-                   <span className="text-[11px] font-black text-primary uppercase tracking-widest">{user.niche}</span>
-                </div>
-              )}
-              {user?.city && (
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {user.city}
-                </div>
-              )}
-              {user?.joinedAt && (
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                  <Calendar className="h-3.5 w-3.5" />
-                  HUSTLING SINCE {format(new Date(user.joinedAt), "MMM yyyy").toUpperCase()}
-                </div>
-              )}
-            </div>
+          {/* Stats Box Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+             <StatCard 
+                label="Insights Shared" 
+                value={user?.postCount || 0} 
+             />
+             <StatCard 
+                label="Followers" 
+                value={followerCount} 
+             />
+             <StatCard 
+                label="Following" 
+                value={user?.followingCount || user?.following?.length || 0} 
+             />
+             <StatCard 
+                label="Hustle Points" 
+                value={user?.points || 0} 
+                icon={<Zap className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 shrink-0" fill="currentColor" />} 
+             />
           </div>
-        </div>
-
-        {/* Mobile Actions */}
-        {!isOwnProfile && (
-          <div className="flex sm:hidden gap-2 mt-6">
-             <Button 
-               onClick={handleFollow}
-               disabled={followLoading}
-               className={cn(
-                 "flex-1 font-black text-[11px] rounded-xl h-12 shadow-lg transition-all",
-                 isFollowing
-                   ? "bg-gray-100 text-gray-600 shadow-none border border-gray-200"
-                   : "bg-primary text-white shadow-primary/20"
-               )}
-             >
-               {isFollowing ? "UNFOLLOW" : "FOLLOW"}
-             </Button>
-          </div>
-        )}
-
-        {/* Bio */}
-        {user?.bio && (
-          <div className="mt-8 p-6 bg-gray-50/50 rounded-2xl border border-gray-100/50">
-            <p className="text-[15px] text-gray-700 leading-relaxed font-medium">
-              {user.bio}
-            </p>
-          </div>
-        )}
-
-        {/* Stats Grid - Bento Style */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
-           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
-              <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{user?.postCount || 0}</p>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Insights Shared</p>
-           </div>
-           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
-              <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{followerCount}</p>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Followers</p>
-           </div>
-           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
-              <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{user?.followingCount || user?.following?.length || 0}</p>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Following</p>
-           </div>
-           <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:border-primary/20 transition-all group">
-              <div className="flex items-center gap-2">
-                 <p className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors">{user?.points || 0}</p>
-                 <Zap className="h-5 w-5 text-primary" />
-              </div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Hustle Points</p>
-           </div>
-        </div>
       </div>
     </div>
   );

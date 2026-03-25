@@ -55,7 +55,7 @@ export async function POST(request, { params }) {
     }
 
     const body = await request.json();
-    const { name, password } = body;
+    const { name, password, bio, city, niche, gmvRange, avatar } = body;
 
     if (!name || !password) {
       return NextResponse.json(
@@ -85,11 +85,11 @@ export async function POST(request, { params }) {
       email: invite.email,
       username,
       passwordHash,
-      avatar: diceBearAvatar,
-      bio: "",
-      city: "",
-      niche: "Other",
-      gmvRange: "Just starting",
+      avatar: avatar || diceBearAvatar,
+      bio: bio || "",
+      city: city || "",
+      niche: niche || "Other",
+      gmvRange: gmvRange || "Just starting",
       role: "member",
       tier: invite.tier,
       points: 0,
