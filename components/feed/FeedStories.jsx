@@ -69,13 +69,13 @@ export default function FeedStories() {
             >
               <div className="relative pointer-events-none">
                 {/* Status/Counter Ring - Ensure grid centering */}
-                <div
-                  className={`h-16 w-16 sm:h-18 sm:w-18 rounded-[1.6rem] p-[2.5px] grid place-items-center ${
-                    story.isYou
-                      ? "bg-gradient-to-tr from-cyan-400 via-blue-400 to-indigo-500 shadow-[0_4px_12px_rgba(56,189,248,0.25)]"
-                      : "bg-gradient-to-tr from-[#6366f1] via-[#8b5cf6] to-[#ec4899] shadow-[0_4px_15px_rgba(99,102,241,0.2)]"
-                  }`}
-                >
+                  <div
+                    className={`h-16 w-16 sm:h-18 sm:w-18 rounded-[1.6rem] p-[2.5px] grid place-items-center ${
+                      story.isYou
+                        ? "bg-gradient-to-tr from-cyan-400 via-blue-400 to-primary shadow-[0_4px_12px_rgba(var(--primary),0.25)]"
+                        : "bg-gradient-to-tr from-primary via-indigo-500 to-purple-500 shadow-[0_4px_15px_rgba(var(--primary),0.2)]"
+                    }`}
+                  >
                   <div className="h-full w-full rounded-[1.45rem] bg-white dark:bg-slate-950 grid place-items-center overflow-hidden">
                     <UserAvatar
                       src={story.avatar}

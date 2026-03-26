@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const tierConfig = {
   starter: {
     label: "Starter",
-    className: "bg-[#514de2]/10 text-[#514de2] border-[#514de2]/20 shadow-[0_0_12px_rgba(81,77,226,0.1)]",
+    className: "bg-primary/10 text-primary border-primary/20 shadow-[0_0_12px_rgba(var(--primary),0.1)]",
   },
   growth: {
     label: "Growth",

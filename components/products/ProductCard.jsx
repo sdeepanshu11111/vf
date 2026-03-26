@@ -24,10 +24,10 @@ export default function ProductCard({ product }) {
   const rawStage = product?.stage ? product.stage.replace(/_/g, " ") : (product?.classification?.replace(/_/g, " ") || "VALIDATED");
   const getStageConfig = (stageText) => {
     const text = stageText.toUpperCase();
-    if (text.includes("VALIDATED")) return { bg: "bg-[#10b981]", text: "text-white" };
-    if (text.includes("INNER CIRCLE")) return { bg: "bg-[#514de2]", text: "text-white" };
+    if (text.includes("VALIDATED")) return { bg: "bg-emerald-500", text: "text-white" };
+    if (text.includes("INNER CIRCLE")) return { bg: "bg-primary", text: "text-white" };
     if (text.includes("RESEARCHED")) return { bg: "bg-slate-500", text: "text-white" };
-    if (text.includes("WINNER")) return { bg: "bg-[#f59e0b]", text: "text-gray-900" };
+    if (text.includes("WINNER")) return { bg: "bg-amber-500", text: "text-gray-900" };
     return { bg: "bg-[#10b981]", text: "text-white" }; // default green
   };
   const stageConfig = getStageConfig(rawStage);
@@ -117,7 +117,7 @@ export default function ProductCard({ product }) {
           {/* Action Button */}
           <button 
             onClick={handleExplore}
-            className="w-full bg-[#514de2] hover:bg-[#4338ca] text-white rounded-xl py-2.5 font-bold text-[13px] tracking-wide flex items-center justify-center gap-1.5 transition-colors"
+            className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl py-2.5 font-bold text-[13px] tracking-wide flex items-center justify-center gap-1.5 transition-colors"
           >
             Explore <ArrowRight className="w-4 h-4 ml-0.5" />
           </button>

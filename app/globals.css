@@ -10,8 +10,8 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    /* Vibrant primary for light mode */
-    --primary: 221 83% 53%;
+    /* Vibrant primary for light mode (#514de2) */
+    --primary: 242 74% 59%;
     --primary-foreground: 210 40% 98%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -24,7 +24,7 @@
     /* Clean, soft borders for light mode */
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 221 83% 53%;
+    --ring: 242 74% 59%;
     /* Modern rounded radius */
     --radius: 1rem;
     
@@ -43,8 +43,8 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 6%;
     --popover-foreground: 0 0% 98%;
-    /* Vibrant neon primary */
-    --primary: 217 91% 60%;
+    /* Vibrant brand primary for dark mode (#514de2) */
+    --primary: 242 74% 59%;
     --primary-foreground: 0 0% 100%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -57,7 +57,7 @@
     /* Extreme subtle dark borders */
     --border: 240 3.7% 12%;
     --input: 240 3.7% 15.9%;
-    --ring: 217 91% 60%;
+    --ring: 242 74% 59%;
 
     /* Sleek Glassmorphism - Dark */
     --glass-background: rgba(10, 10, 12, 0.65);
