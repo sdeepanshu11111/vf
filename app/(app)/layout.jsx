@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sparkles } from "lucide-react";
 import VfRoundMark from "@/components/brand/VfRoundMark";
+import WelcomeTour from "@/components/layout/WelcomeTour";
 
 export default function AppLayout({ children }) {
   return (
@@ -46,11 +47,12 @@ export default function AppLayout({ children }) {
         </div>
       </main>
 
-      <aside className="hidden xl:flex fixed right-4 top-4 bottom-4 w-[320px] z-30">
+      <aside id="tour-right-panel" className="hidden xl:flex fixed right-4 top-4 bottom-4 w-[320px] z-30">
         <RightPanel />
       </aside>
 
       <Toaster position="top-right" expand={false} richColors closeButton />
+      <WelcomeTour />
     </div>
   );
 }

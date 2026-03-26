@@ -130,6 +130,7 @@ export default function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                id={`tour-${item.label.toLowerCase()}`}
                 className={cn(
                   "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-medium transition-all group",
                   isActive
@@ -167,6 +168,7 @@ export default function Sidebar() {
           {user && (
             <Link
               href={`/profile/${user.id}`}
+              id="tour-profile"
               className={cn(
                 "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-medium transition-all group",
                 pathname.includes("/profile") && !pathname.includes("/edit")
@@ -195,6 +197,7 @@ export default function Sidebar() {
           {user?.role && ["moderator", "admin"].includes(user.role) && (
             <Link
               href="/moderation"
+              id="tour-admin"
               className={cn(
                 "relative flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-medium transition-all group",
                 pathname === "/moderation"
