@@ -2,39 +2,63 @@
 
 import { useState } from "react";
 import { Link } from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function ProductCard({ product }) {
   const title = product?.name || "Premium Product";
   
-  // Intelligently parse cost range to save horizontal space (e.g. "759 - 3332" -> "759+")
-  let cost = product?.product_cost || product?.custom_pricing?.min || "N/A";
-  if (typeof cost === "string" && cost.includes("-")) {
-    cost = `${cost.split("-")[0].trim()}+`;
+  // Parse cost
+  let rawCost = product?.product_cost || product?.custom_pricing?.min || "120";
+  if (typeof rawCost === "string" && rawCost.includes("-")) {
+    rawCost = rawCost.split("-")[0].trim();
   }
+  const numericCost = parseFloat(rawCost.toString().replace(/[^0-9.]/g, "")) || 120;
+  
+  // Deterministic mock for price and pc ratio if not provided by backend
+  const multiplier = 4.0 + (title.length % 10) / 10; // e.g. 4.0 to 4.9
+  const price = product?.selling_price || Math.floor(numericCost * multiplier);
+  const pcRatio = product?.pc_ratio || (price / numericCost).toFixed(2);
 
-  // Round margin to whole number
-  let margin = 0;
-  if (product?.profit_margin !== undefined && product?.profit_margin !== null) {
-    margin = Math.round(Number(product.profit_margin));
-  }
+  // Badge mapping
+  const rawStage = product?.stage ? product.stage.replace(/_/g, " ") : (product?.classification?.replace(/_/g, " ") || "VALIDATED");
+  const getStageConfig = (stageText) => {
+    const text = stageText.toUpperCase();
+    if (text.includes("VALIDATED")) return { bg: "bg-[#10b981]", text: "text-white" };
+    if (text.includes("INNER CIRCLE")) return { bg: "bg-[#514de2]", text: "text-white" };
+    if (text.includes("RESEARCHED")) return { bg: "bg-slate-500", text: "text-white" };
+    if (text.includes("WINNER")) return { bg: "bg-[#f59e0b]", text: "text-gray-900" };
+    return { bg: "bg-[#10b981]", text: "text-white" }; // default green
+  };
+  const stageConfig = getStageConfig(rawStage);
 
-  // Clean tags - horizontal joined string rather than heavy vertical pills
-  const pros = product?.product_features?.pros?.slice(0, 2) || [];
-  const joinedPros = pros.join(" • ");
+  // Flag logic (fallback to China since dropship dominates there, or IN if specified)
+  const flag = product?.country === "IN" ? "🇮🇳" : "🇨🇳";
 
-  // Handle stage/class intelligently for the primary badge
-  const badgeText = product?.stage ? product.stage.replace(/_/g, " ") : (product?.classification?.replace(/_/g, " ") || "NEW");
-
-  // Image fallback state
-  const initialThumbnail = product?.primary_image || "https://placehold.co/600x600/111827/ffffff?text=Product";
+  // Image
+  const initialThumbnail = product?.primary_image || "https://placehold.co/600x600/f8fafc/94a3b8?text=Product";
   const [imgSrc, setImgSrc] = useState(initialThumbnail);
 
+  const handleExplore = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const vfpd = product?.vfprodid || "N/A";
+    const message = `Hi, I am interested in exploring this product: ${title} (ID: ${vfpd}). Can you provide more details?`;
+    
+    if (typeof window !== "undefined" && window.Intercom) {
+      window.Intercom('showNewMessage', message);
+    }
+  };
+
   return (
-    <div className="bg-white dark:bg-[#0f172a] group flex flex-col rounded-[24px] border border-gray-200/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-500 cursor-pointer h-full relative overflow-hidden">
+    <div 
+      onClick={handleExplore}
+      className="bg-white group flex flex-col rounded-[20px] border border-gray-200/80 shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_12px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full relative overflow-hidden"
+    >
       
-      {/* Sleek Image Header with bottom fade */}
-      <div className="relative h-[220px] w-full shrink-0 overflow-hidden bg-gray-50 dark:bg-black/40">
+      {/* Image Area */}
+      <div className="relative h-[220px] w-full shrink-0 overflow-hidden bg-gray-50">
         <img
           src={imgSrc}
           onError={() => setImgSrc("https://placehold.co/600x600/f8fafc/94a3b8?text=Image+Unavailable")}
@@ -43,59 +67,63 @@ export default function ProductCard({ product }) {
           className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out"
         />
         
-        {/* Modern Minimal Badge with subtle ping animation indicator */}
-        <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-white/95 dark:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-gray-200/50 dark:border-white/10 shadow-sm max-w-[180px]">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-          </span>
-          <span className="text-[9px] font-black uppercase tracking-widest text-gray-900 dark:text-white truncate">
-            {badgeText}
-          </span>
+        {/* Top Badges */}
+        <div className={cn(
+          "absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm",
+          stageConfig.bg,
+          stageConfig.text
+        )}>
+          {rawStage}
+        </div>
+        
+        <div className="absolute top-3 right-3 z-10 text-lg shadow-sm drop-shadow-md">
+          {flag}
         </div>
 
-        {/* Gradient Fade to Content */}
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white dark:from-[#0f172a] to-transparent pointer-events-none" />
+        {/* Bottom Badges */}
+        <div className="absolute bottom-3 left-3 z-10 bg-[#10b981] text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm flex items-center gap-1">
+          ⚡ 48hrs
+        </div>
+        
+        <div className="absolute bottom-3 right-3 z-10 bg-[#f59e0b] text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm flex items-center gap-1">
+          ⭐ {product?.star_rating || "9.0"}
+        </div>
       </div>
 
-      {/* Content flows seamlessly from the faded image */}
-      <div className="px-6 pb-6 flex flex-col flex-1 relative z-10 -mt-6">
+      {/* Content Area */}
+      <div className="p-5 flex flex-col flex-1">
         
-        {/* Title */}
-        <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-snug mb-1.5 line-clamp-2" title={title}>
+        <h3 className="font-bold text-gray-900 text-[15px] leading-tight line-clamp-2 mb-2" title={title}>
           {title}
         </h3>
 
-        {/* Pros subtle list */}
-        {joinedPros && (
-          <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 tracking-wider uppercase mb-5 truncate max-w-full">
-            {joinedPros}
-          </p>
-        )}
-
-        <div className="mt-auto"></div>
-
-        {/* Modern Economy Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-gray-50 dark:bg-white/5 rounded-[16px] p-3.5 border border-gray-100 dark:border-white/5 flex flex-col justify-center transition-colors group-hover:bg-gray-100 dark:group-hover:bg-white/10">
-             <span className="text-gray-400 dark:text-gray-500 text-[9px] font-bold uppercase tracking-widest mb-1">Cost</span>
-             <span className="font-black text-gray-900 dark:text-white text-[15px] truncate">₹{cost}</span>
+        <div className="mt-auto pt-3">
+          {/* Stats Row */}
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex flex-col items-center flex-1">
+              <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Cost</span>
+              <span className="text-gray-900 font-bold text-[13px]">₹{numericCost}</span>
+            </div>
+            <div className="flex flex-col items-center flex-1">
+              <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">Price</span>
+              <span className="text-gray-900 font-bold text-[13px]">₹{price}</span>
+            </div>
+            <div className="flex flex-col items-center flex-1">
+              <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-0.5">P/C</span>
+              <span className="text-[#10b981] font-bold text-[13px]">{pcRatio}x</span>
+            </div>
           </div>
-          
-          <div className="bg-emerald-50 dark:bg-emerald-500/10 rounded-[16px] p-3.5 border border-emerald-100 dark:border-emerald-500/20 flex flex-col justify-center transition-colors group-hover:bg-emerald-100 dark:group-hover:bg-emerald-500/20">
-             <span className="text-emerald-500 dark:text-emerald-400 text-[9px] font-bold uppercase tracking-widest mb-1 flex items-center gap-1">
-               <Sparkles className="h-3 w-3" /> Profit
-             </span>
-             <span className="font-black text-emerald-600 dark:text-emerald-400 text-[15px] truncate">{margin}%</span>
-          </div>
+
+          {/* Action Button */}
+          <button 
+            onClick={handleExplore}
+            className="w-full bg-[#514de2] hover:bg-[#4338ca] text-white rounded-xl py-2.5 font-bold text-[13px] tracking-wide flex items-center justify-center gap-1.5 transition-colors"
+          >
+            Explore <ArrowRight className="w-4 h-4 ml-0.5" />
+          </button>
         </div>
-
-        {/* Premium Dark Action Button */}
-        <button className="w-full bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 text-white rounded-[14px] py-3.5 px-6 flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest shadow-md transition-all active:scale-[0.98]">
-          Analyze Product
-          <ArrowRight className="w-4 h-4 ml-0.5" />
-        </button>
       </div>
+      
     </div>
   );
 }
