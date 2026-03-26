@@ -364,12 +364,17 @@ export default function ReelItem({ product, isActive }) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            // open in new tab
-            const email = user?.email || "";
-            window.open(
-              `https://dash.vfulfill.io/signup?email=${email}`,
-              "_blank",
-            );
+            const vfpd = product?.vfprodid || "N/A";
+            const message = `Hi, I am interested in getting a quote for this product: ${product.name} (ID: ${vfpd}).`;
+            if (typeof window !== "undefined" && window.Intercom) {
+              window.Intercom('showNewMessage', message);
+            } else {
+              const email = user?.email || "";
+              window.open(
+                `https://dash.vfulfill.io/signup?email=${email}`,
+                "_blank",
+              );
+            }
           }}
           className="mt-4 w-full sm:max-w-[180px] px-5 py-2.5 bg-white text-black font-black uppercase tracking-wider text-[11px] rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,255,255,0.25)] hover:shadow-[0_4px_25px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 group"
         >

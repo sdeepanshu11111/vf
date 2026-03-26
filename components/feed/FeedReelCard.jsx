@@ -156,25 +156,35 @@ export default function FeedReelCard({ reel }) {
   if (!videoUrl) return null;
 
   return (
-    <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden">
-      {/* Header — like a post */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary to-rose-500 flex items-center justify-center shadow-sm">
-            <Clapperboard className="h-4.5 w-4.5 text-white h-5 w-5" />
+    <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden mb-6 transition-all duration-300">
+      {/* Header — Screenshot style redesign */}
+      <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center gap-3.5">
+          <div className="h-12 w-12 rounded-[1.2rem] bg-gradient-to-tr from-[#6366f1] via-[#8b5cf6] to-[#ec4899] flex items-center justify-center shadow-[0_4px_12px_rgba(99,102,241,0.3)] shrink-0">
+            <Clapperboard className="h-6 w-6 text-white stroke-[2.5px]" />
           </div>
           <div>
-            <p className="font-black text-gray-900 dark:text-white text-sm leading-tight">{brand}</p>
-            <p className="text-[11px] font-bold text-primary uppercase tracking-widest">Trending Reel</p>
+            <div className="flex items-center gap-1.5">
+              <p className="font-extrabold text-[#0f172a] dark:text-white text-[16px] leading-[1.1] tracking-tight">vF Verified</p>
+              <div className="h-4 w-4 rounded-full bg-blue-500 flex items-center justify-center">
+                 <svg className="w-2.5 h-2.5 text-white fill-current" viewBox="0 0 20 20">
+                    <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                 </svg>
+              </div>
+            </div>
+            <p className="text-[10px] font-extrabold text-[#3b82f6] uppercase tracking-[0.08em] mt-1">Trending Reel</p>
           </div>
         </div>
-        <Link href="/reels" className="text-xs font-bold text-primary hover:text-primary/80 transition-colors px-3 py-1.5 bg-primary/5 rounded-xl">
+        <Link 
+          href="/reels" 
+          className="text-[13px] font-bold text-blue-600 hover:text-blue-700 transition-all px-5 py-2.5 bg-blue-50/80 hover:bg-blue-100/90 rounded-full flex items-center gap-1 active:scale-95"
+        >
           View all →
         </Link>
       </div>
 
-      {/* Video */}
-      <div className="relative aspect-[9/16] sm:aspect-[4/5] bg-black cursor-pointer" onClick={togglePlay}>
+      {/* Video - Shorter height for "Feed" experience */}
+      <div className="relative aspect-[3/2] sm:aspect-[16/9] bg-[#f8fafc] dark:bg-black/40 cursor-pointer overflow-hidden group/video" onClick={togglePlay}>
         <video
           ref={videoRef}
           src={videoUrl}
@@ -225,7 +235,13 @@ export default function FeedReelCard({ reel }) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            window.open(`https://dash.vfulfill.io/signup?email=${user?.email || ""}`, "_blank");
+            const vfpd = reel?.vfprodid || "N/A";
+            const message = `Hi, I am interested in getting a quote for this product: ${title} (ID: ${vfpd}).`;
+            if (typeof window !== "undefined" && window.Intercom) {
+              window.Intercom('showNewMessage', message);
+            } else {
+              window.open(`https://dash.vfulfill.io/signup?email=${user?.email || ""}`, "_blank");
+            }
           }}
           className="absolute bottom-4 right-3 z-10 px-3 py-2 bg-white text-black font-black text-[10px] uppercase tracking-wider rounded-xl flex items-center gap-1.5 shadow-xl hover:scale-105 active:scale-95 transition-all"
         >
@@ -235,13 +251,13 @@ export default function FeedReelCard({ reel }) {
       </div>
 
       {/* Action bar — like post card */}
-      <div className="px-5 py-3 flex items-center justify-between border-t border-gray-50 dark:border-white/5">
-        <div className="flex items-center gap-1">
+      <div className="px-5 py-2 flex items-center justify-between border-t border-gray-50 dark:border-white/5">
+        <div className="flex items-center gap-0.5">
           {/* Like */}
           <button
             onClick={handleLike}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95",
+              "flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95",
               isLiked ? "text-red-500 bg-red-50 dark:bg-red-500/10" : "text-muted-foreground hover:bg-gray-50 dark:hover:bg-white/5"
             )}
           >
@@ -252,7 +268,7 @@ export default function FeedReelCard({ reel }) {
           {/* Comment */}
           <button
             onClick={(e) => { e.stopPropagation(); setShowComments(true); }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold text-muted-foreground hover:bg-gray-50 dark:hover:bg-white/5 transition-all hover:scale-105 active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-sm font-bold text-muted-foreground hover:bg-gray-50 dark:hover:bg-white/5 transition-all hover:scale-105 active:scale-95"
           >
             <MessageCircle className="h-4 w-4" />
             <span>{comments.length}</span>
@@ -261,7 +277,7 @@ export default function FeedReelCard({ reel }) {
           {/* Share */}
           <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold text-muted-foreground hover:bg-gray-50 dark:hover:bg-white/5 transition-all hover:scale-105 active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-sm font-bold text-muted-foreground hover:bg-gray-50 dark:hover:bg-white/5 transition-all hover:scale-105 active:scale-95"
           >
             <Share2 className="h-4 w-4" />
           </button>

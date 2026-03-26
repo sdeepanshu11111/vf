@@ -57,7 +57,7 @@ export default function RightPanel() {
   const [yesterdayProduct, setYesterdayProduct] = useState(null);
 
   useEffect(() => {
-    fetch("/api/reels?limit=1")
+    fetch("/api/reels?limit=1&random=true")
       .then((r) => r.json())
       .then((d) => { if (d.data?.length) setYesterdayProduct(d.data[0]); })
       .catch(() => {});
@@ -104,27 +104,46 @@ export default function RightPanel() {
               A highly researched winning product is dropping in:
             </p>
             
-            {/* Interactive Counter */}
-            <div className="flex items-center justify-center gap-3 py-3">
-              <div className="flex flex-col items-center justify-center bg-black/5 dark:bg-white/5 w-14 h-14 rounded-2xl border border-black/5 dark:border-white/10 shadow-inner">
-                <span className="text-xl font-black text-foreground font-mono">{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">HRS</span>
+            {/* Interactive Counter - Modernized */}
+            <div className="flex items-center justify-center gap-4 py-4">
+              <div className="flex flex-col items-center justify-center bg-white/40 dark:bg-white/5 w-16 h-18 rounded-[1.25rem] border border-white/40 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] backdrop-blur-md relative overflow-hidden group/unit">
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover/unit:opacity-100 transition-opacity"></div>
+                <span className="text-2xl font-black text-foreground font-mono tracking-tighter">{String(timeLeft.hours).padStart(2, '0')}</span>
+                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.15em] mt-1 opacity-70">HRS</span>
               </div>
-              <span className="text-xl font-black text-muted-foreground opacity-50 mb-3">:</span>
-              <div className="flex flex-col items-center justify-center bg-black/5 dark:bg-white/5 w-14 h-14 rounded-2xl border border-black/5 dark:border-white/10 shadow-inner">
-                <span className="text-xl font-black text-foreground font-mono">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">MIN</span>
+              
+              <div className="flex flex-col items-center justify-center py-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/30 mb-1.5"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/30"></div>
               </div>
-              <span className="text-xl font-black text-muted-foreground opacity-50 mb-3">:</span>
-              <div className="flex flex-col items-center justify-center bg-black/5 dark:bg-white/5 w-14 h-14 rounded-2xl border border-black/5 dark:border-white/10 shadow-inner">
-                <span className="text-xl font-black text-foreground font-mono">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">SEC</span>
+
+              <div className="flex flex-col items-center justify-center bg-white/40 dark:bg-white/5 w-16 h-18 rounded-[1.25rem] border border-white/40 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] backdrop-blur-md relative overflow-hidden group/unit">
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover/unit:opacity-100 transition-opacity"></div>
+                <span className="text-2xl font-black text-foreground font-mono tracking-tighter">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.15em] mt-1 opacity-70">MIN</span>
+              </div>
+
+              <div className="flex flex-col items-center justify-center py-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/30 mb-1.5"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/30"></div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center bg-white/40 dark:bg-white/5 w-16 h-18 rounded-[1.25rem] border border-white/40 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] backdrop-blur-md relative overflow-hidden group/unit">
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover/unit:opacity-100 transition-opacity"></div>
+                <span className="text-2xl font-black text-primary font-mono tracking-tighter">{String(timeLeft.seconds).padStart(2, '0')}</span>
+                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.15em] mt-1 opacity-70">SEC</span>
               </div>
             </div>
             
-            <button className="w-full mt-2 py-2.5 bg-primary text-primary-foreground text-[11px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-95 transition-all duration-300">
-              Notify Me
-            </button>
+            {(timeLeft.hours > 0 || timeLeft.minutes > 0 || timeLeft.seconds > 0) ? (
+              <button className="w-full mt-2 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground text-[12px] font-black uppercase tracking-widest rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] hover:shadow-[0_12px_30px_-5px_rgba(79,70,229,0.6)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
+                Notify Me
+              </button>
+            ) : (
+              <div className="w-full mt-2 py-3.5 bg-emerald-500 text-white text-[12px] font-black uppercase tracking-widest rounded-2xl shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 animate-pulse">
+                Drop is Live! ✨
+              </div>
+            )}
           </div>
         </div>
       </div>

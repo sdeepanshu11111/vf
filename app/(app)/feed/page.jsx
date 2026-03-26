@@ -86,7 +86,7 @@ export default function FeedPage() {
 
   // Fetch reels for inline injection
   useEffect(() => {
-    fetch("/api/reels?page=1&limit=10")
+    fetch("/api/reels?limit=10&random=true")
       .then((r) => r.json())
       .then((d) => setReels(d.data || []))
       .catch(() => {});

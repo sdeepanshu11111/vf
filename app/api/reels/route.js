@@ -41,13 +41,28 @@ export async function GET(request) {
       "product_features.pros": 1,
     };
 
-    const products = await db
-      .collection("products")
-      .find(query, { projection })
-      .sort({ _id: -1 })
-      .skip(skip)
-      .limit(limit)
-      .toArray();
+    const isRandom = searchParams.get("random") === "true";
+
+    let products = [];
+    if (isRandom) {
+      // Use aggregation for random sampling
+      products = await db
+        .collection("products")
+        .aggregate([
+          { $match: query },
+          { $sample: { size: limit } },
+          { $project: projection }
+        ])
+        .toArray();
+    } else {
+      products = await db
+        .collection("products")
+        .find(query, { projection })
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+    }
 
     // Serialize ObjectId to pass down to Client Components
     const serialized = products.map((p) => ({

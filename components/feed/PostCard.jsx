@@ -20,6 +20,7 @@ import {
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
 import PostTypePill from "@/components/ui/PostTypePill";
+import PostVideoPlayer from "@/components/feed/PostVideoPlayer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -271,8 +272,8 @@ export default function PostCard({ post, onUpdate }) {
 
           {/* Video */}
           {post.video && (
-            <div className="mt-4 sm:mt-5 overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm bg-black relative">
-              <video src={post.video} controls className="w-full max-h-[500px] object-contain" />
+            <div className="mt-4 sm:mt-5 overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm relative">
+              <PostVideoPlayer src={post.video} />
             </div>
           )}
 
