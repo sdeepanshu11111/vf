@@ -34,15 +34,15 @@ export default function UserAvatar({
     `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || "User")}`;
 
   return (
-    <div className={cn("relative inline-flex shrink-0 items-center justify-center", className)}>
+    <div className={cn("relative inline-flex shrink-0 items-center justify-center overflow-hidden", className)}>
       <img
         loading="lazy"
         src={avatarUrl}
         alt={name || "User"}
         className={cn(
           "object-cover bg-gray-100",
-          className?.includes("rounded-") ? "" : "rounded-full",
           sizeClasses[size] || sizeClasses.md,
+          className?.includes("rounded-") ? "" : "rounded-full"
         )}
       />
       {online && (

@@ -205,37 +205,47 @@ export default function Sidebar() {
         {/* User Profile Footer or Login/Signup */}
         {user ? (
           <div className="p-4 mt-auto">
-            <div className="glass-card bg-black/5 dark:bg-white/5 p-2 rounded-2xl border-white/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+            <div className="bg-white dark:bg-slate-900 rounded-[2.2rem] border border-slate-200 dark:border-white/10 transition-all duration-300 shadow-2xl shadow-slate-300/60 dark:shadow-none translate-y-0 hover:-translate-y-1 group/footer">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-3 w-full p-2 rounded-xl transition-all outline-none group">
-                    <UserAvatar src={user.avatar} name={user.name} size="sm" className="ring-2 ring-white/20 shadow-md" />
-                    <div className="flex-1 min-w-0 text-left">
-                      <p className="text-sm font-bold text-foreground truncate">
-                        {user.name}
-                      </p>
-                      <TierBadge tier={user.tier} size="xs" />
+                  <button className="flex items-center justify-between gap-3 w-full p-2 rounded-[2rem] transition-all outline-none outline-none">
+                    <div className="flex items-center gap-3">
+                      <div className="relative shrink-0">
+                        <UserAvatar 
+                          src={user.avatar} 
+                          name={user.name} 
+                          size="sm" 
+                          className="h-11 w-11 ring-4 ring-white dark:ring-slate-800 shadow-lg rounded-full object-cover" 
+                        />
+                        <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 bg-emerald-500 rounded-full border-4 border-white dark:border-slate-900 shadow-sm" />
+                      </div>
+                      <div className="flex flex-col items-start min-w-0">
+                        <p className="text-sm font-black text-slate-900 dark:text-white truncate tracking-tight">
+                          {user.name}
+                        </p>
+                        <TierBadge tier={user.tier} size="xs" className="mt-0.5" />
+                      </div>
                     </div>
-                    <ChevronUp className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    <ChevronUp className="h-4 w-4 text-slate-400 group-hover/footer:text-[#514de2] group-hover/footer:-translate-y-0.5 transition-all mr-2" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   side="top"
                   align="center"
-                  className="w-[220px] glass-card rounded-2xl mb-2 border-white/20 dark:border-white/10 shadow-xl"
+                  className="w-[230px] glass-card rounded-[2rem] mb-3 p-2 border-white/40 dark:border-white/10 shadow-2xl backdrop-blur-2xl"
                 >
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-primary/10 focus:text-primary py-2.5 font-bold cursor-pointer transition-colors">
-                    <Link href="/profile/edit" className="flex items-center gap-2">
+                  <DropdownMenuItem asChild className="rounded-2xl focus:bg-[#514de2]/10 focus:text-[#514de2] py-3 px-4 font-black text-xs uppercase tracking-widest cursor-pointer transition-all">
+                    <Link href="/profile/edit" className="flex items-center gap-3">
                       <Settings className="h-4 w-4" />
                       Settings
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-border/50 my-1" />
+                  <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/10 my-1 mx-2" />
                   <DropdownMenuItem
-                    className="rounded-xl text-red-500 focus:bg-red-500/10 focus:text-red-500 py-2.5 font-bold cursor-pointer transition-colors"
+                    className="rounded-2xl text-red-500 focus:bg-red-50/10 focus:text-red-600 py-3 px-4 font-black text-xs uppercase tracking-widest cursor-pointer transition-all"
                     onClick={() => signOut({ callbackUrl: "/login" })}
                   >
-                    <LogOut className="h-4 w-4 mr-2" />
+                    <LogOut className="h-4 w-4 mr-3" />
                     Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
