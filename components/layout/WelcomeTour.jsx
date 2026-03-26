@@ -13,7 +13,10 @@ import {
   ArrowRight,
   X,
   ChevronRight,
-  Coins
+  Coins,
+  Users,
+  Zap,
+  TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import VfRoundMark from "@/components/brand/VfRoundMark";
@@ -21,12 +24,12 @@ import VfRoundMark from "@/components/brand/VfRoundMark";
 const TOUR_STORAGE_KEY = "vf_community_tour_completed";
 
 const features = [
-  { icon: Globe, label: "100% Managed Platform", color: "text-blue-500", bg: "bg-blue-500/10" },
-  { icon: Search, label: "Sourcing & QC", color: "text-orange-500", bg: "bg-orange-500/10" },
-  { icon: Ship, label: "Imports & Customs", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-  { icon: Package, label: "Private Label Packaging", color: "text-purple-500", bg: "bg-purple-500/10" },
-  { icon: HomeIcon, label: "Warehousing & Fulfillment", color: "text-amber-500", bg: "bg-amber-500/10" },
-  { icon: Coins, label: "COD Remittance", color: "text-emerald-600", bg: "bg-emerald-500/10" },
+  { icon: Sparkles, label: "Exclusive Product Drops", color: "text-blue-500", bg: "bg-blue-500/10" },
+  { icon: TrendingUp, label: "Expert Scaling Insights", color: "text-orange-500", bg: "bg-orange-500/10" },
+  { icon: Users, label: "Elite Founder Network", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+  { icon: CheckCircle2, label: "Verified Winning Strategies", color: "text-purple-500", bg: "bg-purple-500/10" },
+  { icon: Globe, label: "Real-time Market Trends", color: "text-amber-500", bg: "bg-amber-500/10" },
+  { icon: Zap, label: "Collaborative Growth", color: "text-emerald-600", bg: "bg-emerald-500/10" },
 ];
 
 const tourSteps = [
@@ -53,6 +56,12 @@ const tourSteps = [
     title: "Product Insights",
     description: "Deep-dive into performance data and insights to scale your business.",
     target: "#tour-insights",
+  },
+  {
+    id: "tour-webinars",
+    title: "Webinars Hub",
+    description: "Access elite masterclasses and expert-led workshops to master eCommerce scaling.",
+    target: "#tour-webinars",
   },
   {
     id: "tour-leaderboard",
@@ -132,16 +141,16 @@ export default function WelcomeTour() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20 mb-6">
                   <Sparkles className="h-3 w-3 text-emerald-500 fill-emerald-500" />
                   <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
-                    #1 eCommerce Fulfillment Platform
+                    The Elite Inner Circle for Ecom Founders
                   </span>
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl font-black text-foreground mb-6 leading-[1.1] tracking-tight">
-                  Launch & Grow your <span className="text-primary italic">COD eCommerce</span> Business in India.
+                  Connect, Learn & Scale with India's <span className="text-primary italic">Top 1% Founders.</span>
                 </h1>
 
                 <p className="text-sm sm:text-base text-muted-foreground mb-10 max-w-lg leading-relaxed font-medium">
-                  We enable entrepreneurs worldwide to build COD enabled drop-shipping and D2C brands with end-to-end managed logistics.
+                  Join a high-performance network of entrepreneurs sharing winning strategies, exclusive product drops, and real-time market insights.
                 </p>
 
                 <div className="grid grid-cols-2 gap-3 w-full mb-10">

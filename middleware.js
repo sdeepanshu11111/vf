@@ -12,6 +12,7 @@ export async function middleware(request) {
     pathname === "/explore" ||
     pathname === "/products" ||
     pathname === "/reels" ||
+    pathname === "/webinars" ||
     pathname === "/members" ||
     pathname.startsWith("/post/") ||
     (pathname.startsWith("/profile/") && !pathname.startsWith("/profile/edit")) ||

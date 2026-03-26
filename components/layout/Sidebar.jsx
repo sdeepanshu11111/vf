@@ -20,6 +20,7 @@ import {
   Bookmark,
   Clapperboard,
   ShoppingBag,
+  Video
 } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
@@ -37,6 +38,7 @@ const navItems = [
   { href: "/feed", icon: Home, label: "Home" },
   { href: "/products", icon: ShoppingBag, label: "Products" },
   { href: "/reels", icon: Clapperboard, label: "Insights" },
+  { href: "/webinars", icon: Video, label: "Webinars" },
   { href: "/saved", icon: Bookmark, label: "Saved" },
   { href: "/notifications", icon: Bell, label: "Notifications", badge: true },
   { href: "/members", icon: Trophy, label: "Leaderboard" },
@@ -308,6 +310,7 @@ export default function Sidebar() {
               [
                 "Home",
                 "Products",
+                "Webinars",
                 "Insights",
                 "Notifications",
               ].includes(i.label),
