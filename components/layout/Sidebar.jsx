@@ -202,8 +202,8 @@ export default function Sidebar() {
           )}
         </nav>
 
-        {/* User Profile Footer */}
-        {user && (
+        {/* User Profile Footer or Login/Signup */}
+        {user ? (
           <div className="p-4 mt-auto">
             <div className="glass-card bg-black/5 dark:bg-white/5 p-2 rounded-2xl border-white/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
               <DropdownMenu>
@@ -242,6 +242,21 @@ export default function Sidebar() {
               </DropdownMenu>
             </div>
           </div>
+        ) : (
+          <div className="p-6 mt-auto space-y-3">
+            <Link 
+              href="/login" 
+              className="flex items-center justify-center w-full py-3 px-4 rounded-2xl text-sm font-bold text-foreground bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all border border-white/10"
+            >
+              Sign In
+            </Link>
+            <Link 
+              href="/signup" 
+              className="flex items-center justify-center w-full py-3 px-4 rounded-2xl text-sm font-black text-white bg-[#514de2] hover:bg-[#433fd7] shadow-lg shadow-[#514de2]/20 transition-all active:scale-[0.98]"
+            >
+              Join Community
+            </Link>
+          </div>
         )}
       </aside>
 
@@ -269,7 +284,7 @@ export default function Sidebar() {
               </Link>
             );
           })}
-          {user && (
+          {user ? (
             <Link
               href={`/profile/${user.id}`}
               className={cn(
@@ -286,6 +301,15 @@ export default function Sidebar() {
                   pathname.includes("/profile") ? "ring-primary" : "ring-transparent grayscale-[30%]"
                 )} 
               />
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="group relative flex flex-col items-center justify-center transition-all duration-300"
+            >
+              <div className="h-8 w-8 rounded-full bg-[#514de2]/10 flex items-center justify-center border border-[#514de2]/20">
+                <User className="h-4 w-4 text-[#514de2]" />
+              </div>
             </Link>
           )}
         </nav>

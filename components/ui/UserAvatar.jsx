@@ -17,6 +17,7 @@ export default function UserAvatar({
     lg: "h-12 w-12",
     xl: "h-16 w-16",
     "2xl": "h-20 w-20",
+    full: "h-full w-full",
   };
 
   const dotSizes = {
@@ -33,13 +34,14 @@ export default function UserAvatar({
     `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || "User")}`;
 
   return (
-    <div className={cn("relative inline-flex shrink-0", className)}>
+    <div className={cn("relative inline-flex shrink-0 items-center justify-center", className)}>
       <img
         loading="lazy"
         src={avatarUrl}
         alt={name || "User"}
         className={cn(
-          "rounded-full object-cover bg-gray-100",
+          "object-cover bg-gray-100",
+          className?.includes("rounded-") ? "" : "rounded-full",
           sizeClasses[size] || sizeClasses.md,
         )}
       />

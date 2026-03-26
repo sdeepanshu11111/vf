@@ -135,11 +135,7 @@ export default function RightPanel() {
               </div>
             </div>
             
-            {(timeLeft.hours > 0 || timeLeft.minutes > 0 || timeLeft.seconds > 0) ? (
-              <button className="w-full mt-2 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground text-[12px] font-black uppercase tracking-widest rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] hover:shadow-[0_12px_30px_-5px_rgba(79,70,229,0.6)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
-                Notify Me
-              </button>
-            ) : (
+            {(timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0) && (
               <div className="w-full mt-2 py-3.5 bg-emerald-500 text-white text-[12px] font-black uppercase tracking-widest rounded-2xl shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2 animate-pulse">
                 Drop is Live! ✨
               </div>
@@ -192,6 +188,23 @@ export default function RightPanel() {
                     ₹{yesterdayProduct.product_cost || "N/A"}
                   </span>
                 </div>
+
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const vfpd = yesterdayProduct?.vfprodid || "N/A";
+                    const message = `Hi, I am interested in getting a quote for this researched product: ${yesterdayProduct.name || yesterdayProduct.title} (ID: ${vfpd}).`;
+                    if (typeof window !== "undefined" && window.Intercom) {
+                      window.Intercom('showNewMessage', message);
+                    } else {
+                      window.open(`https://dash.vfulfill.io/signup?email=${session?.user?.email || ""}`, "_blank");
+                    }
+                  }}
+                  className="w-full mt-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/30 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  Get A Quote
+                </button>
               </div>
             )}
           </div>
