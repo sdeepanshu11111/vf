@@ -3,7 +3,17 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "@/components/products/ProductCard";
-import { Sparkles, ArrowDownToLine, Loader2 } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
+
+const itemVariants = {
+  initial: { opacity: 0, scale: 0.95, y: 20 },
+  animate: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] }
+  }
+};
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -123,9 +133,7 @@ export default function ProductsPage() {
             {products.map((product, i) => (
               <motion.div
                 key={`${product._id}-${i}`}
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+                variants={itemVariants}
               >
                 <ProductCard product={product} />
               </motion.div>

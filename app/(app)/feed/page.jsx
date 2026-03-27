@@ -13,6 +13,15 @@ import { Loader2 } from "lucide-react";
 // Inject reel strip after every N posts
 const REEL_INJECT_EVERY = 3;
 
+const itemVariants = {
+  initial: { opacity: 0, y: 12 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.4, ease: [0.23, 1, 0.32, 1] }
+  }
+};
+
 function PostSkeleton() {
   return (
     <div className="rounded-3xl border border-slate-200/70 bg-white p-5 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.35)] space-y-3">
@@ -163,18 +172,14 @@ export default function FeedPage() {
               item.type === "post" ? (
                 <motion.div
                   key={item.key}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
+                  variants={itemVariants}
                 >
                   <PostCard post={item.data} onUpdate={() => fetchPosts(true)} />
                 </motion.div>
               ) : item.type === "reel" ? (
                 <motion.div
                   key={item.key}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
+                  variants={itemVariants}
                 >
                   <FeedReelCard reel={item.data} />
                 </motion.div>
