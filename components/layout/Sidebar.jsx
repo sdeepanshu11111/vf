@@ -20,7 +20,8 @@ import {
   Bookmark,
   Clapperboard,
   ShoppingBag,
-  Video
+  Video,
+  Coins,
 } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
@@ -245,11 +246,16 @@ export default function Sidebar() {
                         <p className="text-sm font-black text-slate-900 dark:text-white truncate tracking-tight">
                           {user.name}
                         </p>
-                        <TierBadge
-                          tier={user.tier}
-                          size="xs"
-                          className="mt-0.5"
-                        />
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <TierBadge tier={user.tier} size="xs" />
+                          <div
+                            id="tour-hustle-points"
+                            className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/20 text-[9px] font-black uppercase tracking-tighter"
+                          >
+                            <Coins className="h-2.5 w-2.5" />
+                            <span>{user.points || 0} pts</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <ChevronUp className="h-4 w-4 text-slate-400 group-hover/footer:text-primary group-hover/footer:-translate-y-0.5 transition-all mr-2" />

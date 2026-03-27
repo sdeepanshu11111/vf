@@ -70,6 +70,12 @@ const tourSteps = [
     target: "#tour-leaderboard",
   },
   {
+    id: "tour-hustle-points",
+    title: "Hustle Points Rewards",
+    description: "Earn points by engaging with the community and unlock free RFQs for your business.",
+    target: "#tour-hustle-points",
+  },
+  {
     id: "tour-right-panel",
     title: "Product Drops & Trends",
     description: "Never miss a winning product with our real-time research drops and data-driven insights.",
@@ -119,7 +125,7 @@ export default function WelcomeTour() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/30 backdrop-blur-[1px]"
             onClick={handleComplete}
           />
 
@@ -204,6 +210,31 @@ export default function WelcomeTour() {
               <p className="text-sm text-muted-foreground mb-6 font-medium leading-relaxed">
                 {stepData.description}
               </p>
+
+              {stepData.id === "tour-hustle-points" && (
+                <div className="mb-6 space-y-2">
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-primary/5 border border-primary/10">
+                    <Zap className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-bold">Get free 3 RFQ added instantly</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2">
+                    {[
+                      { pts: 50, rfqs: 2 },
+                      { pts: 100, rfqs: 4 },
+                      { pts: 150, rfqs: 6 }
+                    ].map(tier => (
+                      <div key={tier.pts} className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 dark:bg-white/5 border border-white dark:border-white/10">
+                        <div className="flex items-center gap-2">
+                          <Coins className="h-3.5 w-3.5 text-amber-500" />
+                          <span className="text-[11px] font-black">{tier.pts} Points</span>
+                        </div>
+                        <div className="h-px flex-1 mx-3 border-t border-dashed border-muted-foreground/20" />
+                        <span className="text-[11px] font-black text-primary">{tier.rfqs} RFQs</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-between">
                 <div className="flex gap-1">
