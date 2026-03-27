@@ -21,6 +21,7 @@ import UserAvatar from "@/components/ui/UserAvatar";
 import TierBadge from "@/components/ui/TierBadge";
 import PostTypePill from "@/components/ui/PostTypePill";
 import PostVideoPlayer from "@/components/feed/PostVideoPlayer";
+import ImageLightbox from "@/components/feed/ImageLightbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +54,7 @@ export default function PostCard({ post, onUpdate }) {
   const [isVoting, setIsVoting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(null);
 
   const author = post.author || {};
   const isUpvoted = upvotes.includes(session?.user?.id);
@@ -258,7 +260,14 @@ export default function PostCard({ post, onUpdate }) {
               post.images.length > 1 ? "grid grid-cols-2 gap-1 bg-slate-100" : ""
             )}>
               {post.images.slice(0, 4).map((img, idx) => (
-                <div key={idx} className={cn("relative overflow-hidden", post.images.length === 3 && idx === 0 ? "col-span-2" : "")}>
+                <div 
+                  key={idx} 
+                  className={cn(
+                    "relative overflow-hidden cursor-pointer", 
+                    post.images.length === 3 && idx === 0 ? "col-span-2" : ""
+                  )}
+                  onClick={(e) => { e.preventDefault(); setActiveImageIndex(idx); }}
+                >
                   <img loading="lazy" src={img} alt="Post" className="w-full h-full object-cover max-h-[500px] min-h-[200px] transform group-hover/media:scale-105 transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)]" />
                   {idx === 3 && post.images.length > 4 && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-2xl backdrop-blur-sm">
@@ -269,6 +278,14 @@ export default function PostCard({ post, onUpdate }) {
               ))}
             </div>
           )}
+
+          <ImageLightbox
+            images={post.images}
+            activeIndex={activeImageIndex}
+            onClose={() => setActiveImageIndex(null)}
+            onNext={() => setActiveImageIndex((prev) => (prev + 1) % post.images.length)}
+            onPrev={() => setActiveImageIndex((prev) => (prev - 1 + post.images.length) % post.images.length)}
+          />
 
           {/* Video */}
           {post.video && (
